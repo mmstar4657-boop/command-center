@@ -14,7 +14,7 @@
 <title>Command Center</title>
 <style>
 :root{--ac:#4f46e5;--ac2:#eef2ff;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f8fafc;--card:#fff;--r:14px}
-*{box-sizing:border-box}html,body{margin:0}
+*{box-sizing:border-box}[hidden]{display:none!important}html,body{margin:0}
 body{font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
 button,input,textarea,select{font:inherit;color:inherit}
 a{color:inherit;text-decoration:none}
@@ -98,6 +98,97 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--ac);outline-offs
 .hb code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:14px;word-break:break-all}.hb a{color:var(--ac);text-decoration:underline}
 textarea.hbe{min-height:60vh;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
 @media(min-width:1000px){.homegrid{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:start}.homegrid .grid{grid-template-columns:1fr}.homegrid>section>h2:first-child{margin-top:8px}.row{padding:12px 16px}}
+
+.ub{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#ef4444;color:#fff;font-size:12px;font-weight:700;line-height:1;flex:none}
+.row .ub{align-self:center}
+.pc .nm{display:flex;align-items:center;gap:8px}.pc .nm .ub{margin-left:auto}
+/* chat */
+main.chatmode{max-width:none;padding:0}
+.chat{display:flex;flex-direction:column;height:calc(var(--vvh,100dvh) - var(--toph,65px));max-width:860px;margin:0 auto;background:var(--bg)}
+.chead{background:#fff;border-bottom:1px solid var(--line);padding:10px 16px 10px}
+.chead .pj{font-weight:700;font-size:13px}
+.chead h1{font-size:18px;margin:2px 0 6px;line-height:1.25}
+.chead .kv{gap:6px}
+.chead select{width:auto;min-height:34px;padding:4px 10px;border-radius:99px;font-size:14px}
+.chead details{margin-top:6px;font-size:14px;color:#334155}.chead summary{cursor:pointer;color:var(--ac);font-weight:600;font-size:13.5px}
+.chead .det{white-space:pre-wrap;margin-top:6px;max-height:30vh;overflow:auto}
+.msgs{flex:1;overflow-y:auto;padding:14px 14px 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.day{text-align:center;color:var(--mut);font-size:12px;font-weight:600;margin:12px 0 8px}
+.msg{display:flex;flex-direction:column;align-items:flex-start;margin:6px 0}
+.msg.m{align-items:flex-end}
+.bub{max-width:min(78%,560px);background:#fff;border:1px solid var(--line);border-radius:18px 18px 18px 6px;padding:9px 13px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
+.msg.m .bub{background:var(--ac);color:#fff;border-color:var(--ac);border-radius:18px 18px 6px 18px}
+.bub a{text-decoration:underline}
+.bub.media{padding:4px;background:transparent;border:0}.msg.m .bub.media{background:transparent}
+.bub .txt{padding:0}
+.bub.withmedia{padding:4px}.bub.withmedia .txt{padding:5px 9px 4px}
+.mt{font-size:11.5px;color:var(--mut);margin:3px 6px 0}
+.atts{display:flex;flex-wrap:wrap;gap:4px}
+.ph{border:0;padding:0;background:#e2e8f0;border-radius:14px;overflow:hidden;cursor:zoom-in;display:block;width:240px;max-width:100%}
+.ph img{display:block;width:100%;height:100%;object-fit:cover}
+.fchip{display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;color:var(--ink)!important;text-decoration:none!important;border-radius:12px;padding:10px 12px;font-weight:600;font-size:14px;max-width:260px}
+.fchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.composer{background:#fff;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+.composer .rowc{display:flex;align-items:flex-end;gap:8px}
+.composer textarea{min-height:44px;max-height:160px;resize:none;border-radius:22px;padding:10px 16px;line-height:1.35}
+.ib{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--ac2);color:var(--ac);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.ib.send{background:var(--ac);color:#fff}.ib:disabled{opacity:.5}
+.pend{display:flex;gap:8px;flex-wrap:wrap;padding:2px 2px 8px}
+.pend .pi{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#f1f5f9;display:grid;place-items:center;font-size:11px;text-align:center;padding:2px}
+.pend .pi img{width:100%;height:100%;object-fit:cover}
+.pend .pi button{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(15,23,42,.75);color:#fff;font-size:13px;cursor:pointer;line-height:1}
+.hint{font-size:11.5px;color:var(--mut);padding:4px 8px 0}
+.lb{position:fixed;inset:0;background:rgba(2,6,23,.92);z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.lb .x{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;display:flex;gap:8px}
+.lb .x a,.lb .x button{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:99px;padding:10px 16px;font-weight:600;cursor:pointer;font-size:15px}
+.newpill{position:sticky;bottom:6px;margin:0 auto;display:block;border:0;background:var(--ink);color:#fff;border-radius:99px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer}
+/* desktop 3-pane */
+main.wide{max-width:none;padding:0}
+.panes{display:grid;grid-template-columns:250px 380px minmax(0,1fr);height:calc(100dvh - var(--toph,65px))}
+.pane{overflow-y:auto;min-width:0}
+.pane.l{background:#fff;border-right:1px solid var(--line);padding:12px 10px;display:flex;flex-direction:column}
+.pane.m{border-right:1px solid var(--line);padding:14px 14px 30px;background:var(--bg)}
+.pane.r{background:var(--bg)}
+.pane.r .chat{height:100%;max-width:none}
+.pane.r .pad{padding:20px 24px}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:#334155;min-height:42px}
+.nav:hover{background:#f1f5f9}.nav.on{background:var(--ac2);color:var(--ac)}
+.nav i{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.nav .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav .c{color:var(--mut);font-size:13px;font-weight:500}
+.nav .wn{background:#ffedd5;color:#c2410c;border-radius:99px;font-size:12px;padding:1px 8px}
+.pane.l .sec{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:16px 12px 6px}
+.pane.l .foot{margin-top:auto;padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.pane.m .row.sel{background:var(--ac2)}
+.ph0{height:100%;display:grid;place-items:center;color:var(--mut);text-align:center;padding:30px}
+.pane.m .hdr .pn{font-size:19px}
+.pane.m .tabs{max-width:none}
+body.wd .top .in{max-width:none}
+.ph{width:280px}
+
+.aud{display:flex;flex-direction:column;gap:2px;min-width:230px}.aud audio{width:250px;max-width:100%;height:40px}
+.aud small{font-size:11.5px;opacity:.8;padding-left:6px}
+.msg.m .bub.media .aud small{color:var(--mut)}
+.rx{display:flex;gap:4px;flex-wrap:wrap;margin:3px 4px 0}
+.rx button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:1px 8px;font-size:14px;cursor:pointer;line-height:1.5}
+.rx button.mine{border-color:var(--ac);background:var(--ac2)}
+.tick{margin-left:3px;letter-spacing:-3px;color:var(--mut)}.tick.rd{color:#0ea5e9;font-weight:700}
+.bwrap{display:flex;align-items:center;gap:4px;max-width:100%}.msg.m .bwrap{flex-direction:row-reverse}
+.bwrap .bub{max-width:min(78vw,560px)}
+.more{opacity:0;border:0;background:none;color:var(--mut);font-size:18px;cursor:pointer;padding:4px 6px;border-radius:8px}
+@media(hover:hover){.msg:hover .more{opacity:1}.more:hover{background:#e2e8f0}}
+.pinbar{display:flex;align-items:center;gap:8px;background:#fffbeb;border-bottom:1px solid #fde68a;padding:8px 16px;cursor:pointer;font-size:14px}
+.pinbar .pt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pinbar .pc2{color:#a16207;font-size:12px;font-weight:700;white-space:nowrap}
+.pinned .bub{box-shadow:0 0 0 2px #fcd34d}
+.flash .bub{animation:fl 1.4s}@keyframes fl{0%,40%{box-shadow:0 0 0 4px #f59e0b}100%{box-shadow:none}}
+.mact{position:fixed;z-index:25;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.18);padding:8px;min-width:250px}
+.mact .em{display:flex;gap:2px}.mact .em button{font-size:22px;border:0;background:none;cursor:pointer;width:38px;height:40px;border-radius:10px}.mact .em button:hover{background:#f1f5f9}
+.mact .it{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 10px;border-radius:10px;font-weight:600;cursor:pointer;font-size:15px}.mact .it:hover{background:#f1f5f9}
+.rec{display:flex;align-items:center;gap:10px;flex:1;min-height:44px;padding:0 12px;border-radius:22px;background:#fef2f2;color:#b91c1c;font-weight:600}
+.rec .dotr{width:10px;height:10px;border-radius:50%;background:#dc2626;animation:bl 1s infinite}@keyframes bl{50%{opacity:.25}}
+.ib.mic.on{background:#dc2626;color:#fff}
+.msg{-webkit-user-select:text;user-select:text}.bub{-webkit-touch-callout:none}
 </style></head>
 <body>
 <header class="top"><div class="in" id="bar"></div></header>
@@ -105,15 +196,23 @@ textarea.hbe{min-height:60vh;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,mon
 <div class="toast" id="toast"></div>
 <script>
 (() => {
-const SB = "https://xgxswoaxalhdfjjxelyt.supabase.co", KEY = "sb_publishable_O0fqxMtqt9gwXlNnHwTFCg_eGNQoo7W", SK = "cc_session_v1";
+const SB = "https://xgxswoaxalhdfjjxelyt.supabase.co", KEY = "sb_publishable_O0fqxMtqt9gwXlNnHwTFCg_eGNQoo7W", SK = "cc_session_v1", BUCKET = "command-attachments";
 const ST = { new: "New", to_do: "To do", working: "Working", waiting_on_mendel: "Waiting on you", done: "Done", cancelled: "Cancelled" };
 const COLORS = ["#2563eb", "#0d9488", "#7c3aed", "#d97706", "#475569", "#db2777", "#16a34a", "#dc2626"];
 const $ = id => document.getElementById(id), app = $("app"), bar = $("bar");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const linky = s => esc(s).replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
 const ago = iso => { const m = (Date.now() - Date.parse(iso)) / 6e4; if (m < 1) return "just now"; if (m < 60) return Math.round(m) + " min ago"; const h = m / 60; if (h < 24) return Math.round(h) + "h ago"; const d = new Date(iso); return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
 const when = iso => new Date(iso).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const hm = iso => new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+const dayl = iso => { const d = new Date(iso), n = new Date(); const y = new Date(n - 864e5); if (d.toDateString() === n.toDateString()) return "Today"; if (d.toDateString() === y.toDateString()) return "Yesterday"; return d.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }); };
 const chip = s => `<span class="chip s-${s}">${ST[s] || s}</span>`;
-function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("on"), 2000); }
+const ub = n => n ? `<span class="ub" title="${n} new from Tab">${n}</span>` : "";
+const WIDE = () => matchMedia("(min-width:1100px)").matches;
+const FINE = () => matchMedia("(hover:hover) and (pointer:fine)").matches;
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("on"), 2200); }
+function setH() { document.documentElement.style.setProperty("--toph", document.querySelector(".top").offsetHeight + "px"); if (window.visualViewport) document.documentElement.style.setProperty("--vvh", visualViewport.height + "px"); }
+window.addEventListener("resize", setH); if (window.visualViewport) visualViewport.addEventListener("resize", () => { setH(); if (CHAT) CHAT.stick(); });
 
 let S = null; try { S = JSON.parse(localStorage.getItem(SK)); } catch {}
 function save(d) { S = { at: d.access_token, rt: d.refresh_token, exp: Date.now() + (d.expires_in || 3600) * 1000 - 60e3, email: d.user && d.user.email }; localStorage.setItem(SK, JSON.stringify(S)); }
@@ -121,20 +220,54 @@ async function auth(grant, body) {
   const r = await fetch(SB + "/auth/v1/token?grant_type=" + grant, { method: "POST", headers: { apikey: KEY, "content-type": "application/json" }, body: JSON.stringify(body) });
   const d = await r.json().catch(() => ({})); if (!r.ok || !d.access_token) throw new Error(d.error_description || d.msg || "Login failed"); save(d);
 }
+let refreshing = null;
 async function token() {
   if (!S) throw new Error("login");
-  if (Date.now() > S.exp) { try { await auth("refresh_token", { refresh_token: S.rt }); } catch { logout(); throw new Error("login"); } }
+  if (Date.now() > S.exp) {
+    refreshing = refreshing || auth("refresh_token", { refresh_token: S.rt }).finally(() => refreshing = null);
+    try { await refreshing; } catch { logout(); throw new Error("login"); }
+  }
   return S.at;
 }
 async function db(path, opt = {}) {
   const t = await token();
   const h = { apikey: KEY, authorization: "Bearer " + t, "accept-profile": "command", "content-profile": "command", "content-type": "application/json" };
-  if (opt.method && opt.method !== "GET") h.prefer = "return=representation";
+  if (opt.method && opt.method !== "GET") h.prefer = opt.prefer || "return=representation";
   const r = await fetch(SB + "/rest/v1/" + path, { method: opt.method || "GET", headers: h, body: opt.body ? JSON.stringify(opt.body) : undefined });
   if (r.status === 401) { logout(); throw new Error("login"); }
   const d = await r.json().catch(() => null);
   if (!r.ok) throw new Error((d && (d.message || d.hint)) || "Error " + r.status);
   return d;
+}
+// ---- storage ----
+const SIGNED = {};
+async function sign(paths) {
+  const need = [...new Set(paths)].filter(p => !SIGNED[p] || SIGNED[p].exp < Date.now());
+  if (need.length) {
+    const t = await token();
+    const r = await fetch(SB + "/storage/v1/object/sign/" + BUCKET, { method: "POST", headers: { apikey: KEY, authorization: "Bearer " + t, "content-type": "application/json" }, body: JSON.stringify({ expiresIn: 3600, paths: need }) });
+    const d = await r.json().catch(() => []);
+    if (Array.isArray(d)) for (const x of d) if (x.signedURL) SIGNED[x.path] = { url: SB + "/storage/v1" + x.signedURL, exp: Date.now() + 3300e3 };
+  }
+  return SIGNED;
+}
+async function upload(path, blob, mime) {
+  const t = await token();
+  const r = await fetch(SB + "/storage/v1/object/" + BUCKET + "/" + path, { method: "POST", headers: { apikey: KEY, authorization: "Bearer " + t, "content-type": mime, "x-upsert": "false" }, body: blob });
+  if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error("Upload failed: " + (d.message || d.error || r.status)); }
+}
+function shrink(file) {
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.round(im.naturalWidth * k), h = Math.round(im.naturalHeight * k);
+      const c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h);
+      URL.revokeObjectURL(u);
+      c.toBlob(b => b ? res({ blob: b, w, h, preview: c.toDataURL("image/jpeg", .5) }) : rej(new Error("Couldn't read that photo")), "image/jpeg", .85);
+    };
+    im.onerror = () => { URL.revokeObjectURL(u); rej(new Error("Couldn't read that photo")); };
+    im.src = u;
+  });
 }
 
 function md(src) {
@@ -152,60 +285,75 @@ function md(src) {
   close(); return out;
 }
 
-function logout() { S = null; localStorage.removeItem(SK); route(); }
+function logout() { S = null; localStorage.removeItem(SK); CHAT = null; route(); }
 
-let P = [], T = [], LAST = {};
+// ---- data ----
+let P = [], T = [], LAST = {}, UNREAD = {}, SEEN = {}, SIG = "";
 async function load() {
-  const [p, t] = await Promise.all([db("projects?select=*&archived=eq.false&order=sort,created_at"), db("tasks?select=id,project_id,title,status,priority,updated_at,created_at&order=updated_at.desc")]);
-  P = p; T = t;
-  const w = T.filter(x => x.status === "waiting_on_mendel").map(x => x.id);
-  LAST = {};
-  if (w.length) {
-    const u = await db("task_updates?select=task_id,body,created_at&author=eq.tab&task_id=in.(" + w.join(",") + ")&order=created_at.desc");
-    for (const x of u) if (!LAST[x.task_id]) LAST[x.task_id] = x.body;
+  const [p, t, tu, sn] = await Promise.all([
+    db("projects?select=*&archived=eq.false&order=sort,created_at"),
+    db("tasks?select=id,project_id,title,status,priority,updated_at,created_at&order=updated_at.desc"),
+    db("task_updates?select=task_id,body,created_at&author=eq.tab&order=created_at.desc&limit=3000"),
+    db("task_seen?select=task_id,seen_at")]);
+  P = p; T = t; SEEN = {}; for (const x of sn) SEEN[x.task_id] = Date.parse(x.seen_at);
+  LAST = {}; UNREAD = {};
+  for (const x of tu) {
+    if (!(x.task_id in LAST)) LAST[x.task_id] = x.body;
+    if (Date.parse(x.created_at) > (SEEN[x.task_id] || 0)) UNREAD[x.task_id] = (UNREAD[x.task_id] || 0) + 1;
   }
+  if (CHAT) delete UNREAD[CHAT.id];
+  const sig = JSON.stringify([P.map(x => [x.id, x.name, x.color]), T.map(x => [x.id, x.status, x.title, x.priority, x.updated_at]), UNREAD]);
+  const changed = sig !== SIG; SIG = sig; return changed;
 }
 const proj = id => P.find(p => p.id === id) || { name: "", color: "#94a3b8" };
+const punread = pid => T.filter(t => t.project_id === pid).reduce((a, t) => a + (UNREAD[t.id] || 0), 0);
+async function markSeen(id, latest) {
+  const at = Math.max(Date.now(), (latest || 0) + 1);
+  SEEN[id] = at; delete UNREAD[id];
+  try { await db("task_seen?on_conflict=task_id", { method: "POST", prefer: "resolution=merge-duplicates,return=minimal", body: { task_id: id, seen_at: new Date(at).toISOString() } }); } catch {}
+}
 
 function top(title, back) {
   bar.innerHTML = (back ? `<button class="back" id="bk">‹ ${esc(back)}</button><div class="brand"><span class="t"></span></div>` : `<div class="brand"><span class="dot">✓</span><span class="t">${esc(title)}</span></div>`) +
     (S ? `<button class="btn" id="nt">+ New task</button>` : "");
   if (back) $("bk").onclick = () => history.length > 1 ? history.back() : (location.hash = "#/");
   if ($("nt")) $("nt").onclick = () => newTask();
+  setH();
 }
 
-function taskRow(t, showProj, q) {
+function taskRow(t, showProj, q, sel) {
   const p = proj(t.project_id);
-  return `<a class="row" href="#/t/${t.id}"><span class="bar" style="background:${esc(p.color)}"></span><div class="main"><div class="tt">${esc(t.title)}</div>` +
+  return `<a class="row${sel ? " sel" : ""}" href="#/t/${t.id}"><span class="bar" style="background:${esc(p.color)}"></span><div class="main"><div class="tt">${esc(t.title)}</div>` +
     (q ? `<div class="q">${esc(q)}</div>` : "") +
-    `<div class="meta">${q ? "" : chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}${showProj ? `<span>${esc(p.name)}</span><span>·</span>` : ""}<span>${ago(t.updated_at)}</span></div></div><span class="chev">›</span></a>`;
+    `<div class="meta">${q ? "" : chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}${showProj ? `<span>${esc(p.name)}</span><span>·</span>` : ""}<span>${ago(t.updated_at)}</span></div></div>${ub(UNREAD[t.id])}<span class="chev">›</span></a>`;
 }
-
-async function home() {
-  top("Command Center");
-  await load();
-  const ps = id => (P.find(p => p.id === id) || { sort: 999 }).sort;
-  const w = T.filter(t => t.status === "waiting_on_mendel").sort((a, b) => (b.priority === "urgent") - (a.priority === "urgent") || ps(a.project_id) - ps(b.project_id) || Date.parse(a.created_at) - Date.parse(b.created_at));
-  const cnt = (pid, ss) => T.filter(t => t.project_id === pid && ss.includes(t.status)).length;
-  app.innerHTML = `<div class="homegrid"><section><h2>Waiting on you ${w.length ? `<span class="n">${w.length}</span>` : ""}</h2>` +
-    (w.length ? `<div class="list">${w.map(t => taskRow(t, true, LAST[t.id])).join("")}</div>` : `<div class="allclear">Nothing is waiting on you right now.</div>`) +
-    `</section><section><h2>Projects</h2><div class="grid">${P.map(p => `<a class="pc" href="#/p/${p.id}" style="--c:${esc(p.color)}"><div class="nm">${esc(p.name)}</div><div class="cnt">
+const waiting = () => { const ps = id => (P.find(p => p.id === id) || { sort: 999 }).sort; return T.filter(t => t.status === "waiting_on_mendel").sort((a, b) => (b.priority === "urgent") - (a.priority === "urgent") || ps(a.project_id) - ps(b.project_id) || Date.parse(a.created_at) - Date.parse(b.created_at)); };
+const cnt = (pid, ss) => T.filter(t => t.project_id === pid && ss.includes(t.status)).length;
+const cards = () => `<div class="grid">${P.map(p => `<a class="pc" href="#/p/${p.id}" style="--c:${esc(p.color)}"><div class="nm">${esc(p.name)}${ub(punread(p.id))}</div><div class="cnt">
       <div><b>${cnt(p.id, ["new", "to_do"])}</b><small>To do</small></div><div><b>${cnt(p.id, ["working"])}</b><small>Working</small></div>
-      <div class="${cnt(p.id, ["waiting_on_mendel"]) ? "w" : ""}"><b>${cnt(p.id, ["waiting_on_mendel"])}</b><small>Waiting on you</small></div><div><b>${cnt(p.id, ["done"])}</b><small>Done</small></div></div></a>`).join("")}</div>
+      <div class="${cnt(p.id, ["waiting_on_mendel"]) ? "w" : ""}"><b>${cnt(p.id, ["waiting_on_mendel"])}</b><small>Waiting on you</small></div><div><b>${cnt(p.id, ["done"])}</b><small>Done</small></div></div></a>`).join("")}</div>`;
+const waitList = sel => { const w = waiting(); return w.length ? `<div class="list">${w.map(t => taskRow(t, true, LAST[t.id], t.id === sel)).join("")}</div>` : `<div class="allclear">Nothing is waiting on you right now.</div>`; };
+
+// ---- phone / iPad pages ----
+function home() {
+  top("Command Center"); app.className = "";
+  const w = waiting();
+  app.innerHTML = `<div class="homegrid"><section><h2>Waiting on you ${w.length ? `<span class="n">${w.length}</span>` : ""}</h2>${waitList()}` +
+    `</section><section><h2>Projects</h2>${cards()}
     <div class="acts" style="max-width:420px"><button class="btn plain" id="np">+ New project</button><button class="btn plain" id="lo" style="flex:.6">Log out</button></div></section></div>`;
   $("np").onclick = newProject; $("lo").onclick = () => { if (confirm("Log out?")) logout(); };
 }
 
 let FILTER = "open", PTAB = "tasks";
-async function handbook(p) {
+function handbook(p, el) {
   const draw = () => {
-    app.querySelector("#pbody").innerHTML = `<div class="card"><div class="hb">${p.handbook ? md(p.handbook) : '<p class="muted">No handbook yet.</p>'}</div>
+    el.innerHTML = `<div class="card"><div class="hb">${p.handbook ? md(p.handbook) : '<p class="muted">No handbook yet.</p>'}</div>
       <div class="muted small" style="margin-top:14px">${p.handbook_updated_at ? "Last edited " + when(p.handbook_updated_at) : ""}</div>
       <div class="acts" style="max-width:300px"><button class="btn ghost" id="hbed">Edit handbook</button></div></div>`;
     $("hbed").onclick = edit;
   };
   const edit = () => {
-    app.querySelector("#pbody").innerHTML = `<div class="card"><div class="muted small">Markdown: # Heading, - list, **bold**. Never put passwords or keys here.</div>
+    el.innerHTML = `<div class="card"><div class="muted small">Markdown: # Heading, - list, **bold**. Never put passwords or keys here.</div>
       <textarea class="hbe" id="hbt" style="margin-top:10px"></textarea>
       <div class="acts"><button class="btn plain" id="hbc">Cancel</button><button class="btn" id="hbs">Save</button></div></div>`;
     $("hbt").value = p.handbook || "";
@@ -214,70 +362,303 @@ async function handbook(p) {
   };
   draw();
 }
-
-async function project(id) {
-  await load();
-  const p = proj(id); if (!p.id) { location.hash = "#/"; return; }
-  top("", "Home");
-  const all = T.filter(t => t.project_id === id);
-  const F = [["open", "Open"], ["new", "New"], ["to_do", "To do"], ["working", "Working"], ["waiting_on_mendel", "Waiting on you"], ["done", "Done"], ["cancelled", "Cancelled"], ["all", "All"]];
+const FL = [["open", "Open"], ["new", "New"], ["to_do", "To do"], ["working", "Working"], ["waiting_on_mendel", "Waiting on you"], ["done", "Done"], ["cancelled", "Cancelled"], ["all", "All"]];
+function projectBody(p, el, sel, onTab) {
+  const all = T.filter(t => t.project_id === p.id);
   const pick = f => f === "all" ? all : f === "open" ? all.filter(t => !["done", "cancelled"].includes(t.status)) : all.filter(t => t.status === f);
-  const draw = () => {
-    const list = pick(FILTER);
-    app.innerHTML = `<div class="hdr" style="--c:${esc(p.color)}"><div class="pn"><i></i>${esc(p.name)}</div></div>
-      <div class="tabs"><button data-pt="tasks" class="${PTAB === "tasks" ? "on" : ""}">Tasks</button><button data-pt="handbook" class="${PTAB === "handbook" ? "on" : ""}">Handbook</button></div>
+  const list = pick(FILTER);
+  el.innerHTML = `<div class="hdr" style="--c:${esc(p.color)}"><div class="pn"><i></i>${esc(p.name)}</div></div>
+      <div class="tabs"><button data-pt="tasks" class="${PTAB === "tasks" ? "on" : ""}">Tasks${ub(punread(p.id))}</button><button data-pt="handbook" class="${PTAB === "handbook" ? "on" : ""}">Handbook</button></div>
       <div id="pbody">
-      <div class="filters">${F.map(([k, l]) => `<button class="f ${FILTER === k ? "on" : ""}" data-f="${k}">${l} <span class="muted small">${pick(k).length}</span></button>`).join("")}</div>
-      ${list.length ? `<div class="list">${list.map(t => taskRow(t, false)).join("")}</div>` : `<div class="list"><div class="empty">No tasks here.</div></div>`}
+      <div class="filters">${FL.map(([k, l]) => `<button class="f ${FILTER === k ? "on" : ""}" data-f="${k}">${l} <span class="muted small">${pick(k).length}</span></button>`).join("")}</div>
+      ${list.length ? `<div class="list">${list.map(t => taskRow(t, false, "", t.id === sel)).join("")}</div>` : `<div class="list"><div class="empty">No tasks here.</div></div>`}
       <div class="acts" style="max-width:420px"><button class="btn ghost" id="pnt">+ New task in ${esc(p.name)}</button></div></div>`;
-    app.querySelectorAll("[data-pt]").forEach(b => b.onclick = () => { PTAB = b.dataset.pt; draw(); });
-    if (PTAB === "handbook") return handbook(p);
-    app.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { FILTER = b.dataset.f; draw(); });
-    $("pnt").onclick = () => newTask(id);
-  };
+  el.querySelectorAll("[data-pt]").forEach(b => b.onclick = () => { PTAB = b.dataset.pt; onTab(); });
+  el.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { FILTER = b.dataset.f; projectBody(p, el, sel, onTab); });
+  $("pnt").onclick = () => newTask(p.id);
+  if (PTAB === "handbook" && !WIDE()) handbook(p, el.querySelector("#pbody"));
+}
+function project(id) {
+  const p = proj(id); if (!p.id) { location.hash = "#/"; return; }
+  top("", "Home"); app.className = "";
+  const draw = () => projectBody(p, app, null, draw);
   draw();
 }
 
-async function task(id) {
-  top("", "Back");
-  const [rows, ups] = await Promise.all([db("tasks?select=*&id=eq." + id), db("task_updates?select=*&task_id=eq." + id + "&order=created_at.desc")]);
-  const t = rows[0]; if (!t) { app.innerHTML = `<div class="empty">This task is gone.</div>`; return; }
+// ---- chat ----
+let CHAT = null;
+function fmtDur(x) { x = Math.round(x || 0); return Math.floor(x / 60) + ":" + String(x % 60).padStart(2, "0"); }
+function attHtml(a) {
+  const mt = a.mime || "";
+  if (mt.startsWith("image/")) { const r = a.width && a.height ? `aspect-ratio:${a.width}/${a.height}` : "aspect-ratio:4/3"; return `<button class="ph" data-path="${esc(a.path)}" style="${r}"><img data-path="${esc(a.path)}" alt="${esc(a.name || "photo")}"></button>`; }
+  if (mt.startsWith("audio/") || (mt.startsWith("video/") && a.voice)) return `<div class="aud"><audio controls preload="metadata" data-path="${esc(a.path)}"></audio><small>🎤 Voice message${a.duration ? " · " + fmtDur(a.duration) : ""}</small></div>`;
+  return `<a class="fchip" data-path="${esc(a.path)}" target="_blank" rel="noopener">📄 <span>${esc(a.name || "file")}</span></a>`;
+}
+function msgHtml(u) {
+  const at = Array.isArray(u.attachments) ? u.attachments : [];
+  const body = (u.body || "").trim(), me = u.author === "mendel";
+  const cls = at.length ? (body ? "withmedia" : "media") : "";
+  const rx = Object.entries(u.reactions || {}).filter(([, w]) => w && w.length);
+  const tick = me ? (u.read_by_tab_at ? `<span class="tick rd" title="Read by Tab">✓✓</span>` : `<span class="tick" title="Sent">✓</span>`) : "";
+  return `<div class="msg ${me ? "m" : "t"}${u.pinned ? " pinned" : ""}" data-id="${u.id}" id="u-${u.id}"><div class="bwrap"><div class="bub ${cls}">${at.length ? `<div class="atts">${at.map(attHtml).join("")}</div>` : ""}${body ? `<div class="txt">${linky(body)}</div>` : ""}</div><button class="more" data-more="${u.id}" aria-label="Message options">⋯</button></div>` +
+    (rx.length ? `<div class="rx">${rx.map(([e, w]) => `<button data-rx="${u.id}" data-e="${esc(e)}" class="${w.includes("mendel") ? "mine" : ""}" title="${w.map(x => x === "mendel" ? "You" : "Tab").join(", ")}">${esc(e)}${w.length > 1 ? " " + w.length : ""}</button>`).join("")}</div>` : "") +
+    `<div class="mt">${u.pinned ? "📌 " : ""}${me ? "You" : "Tab"} · ${hm(u.created_at)}${tick}</div></div>`;
+}
+async function hydrate(root) {
+  const els = [...root.querySelectorAll("[data-path]:not([data-ok])")]; if (!els.length) return;
+  try { await sign(els.map(e => e.dataset.path)); } catch { return; }
+  for (const e of els) { const s = SIGNED[e.dataset.path]; if (!s) continue; e.dataset.ok = 1; if (e.tagName === "IMG") { e.src = s.url; e.onload = () => CHAT && CHAT.stickIfNear(); } else if (e.tagName === "A") e.href = s.url; else if (e.tagName === "AUDIO") e.src = s.url; }
+}
+function lightbox(path) {
+  const s = SIGNED[path]; if (!s) return;
+  const d = document.createElement("div"); d.className = "lb";
+  d.innerHTML = `<img src="${esc(s.url)}" alt=""><div class="x"><a href="${esc(s.url)}" target="_blank" rel="noopener">Open</a><button>Close</button></div>`;
+  d.onclick = e => { if (e.target.tagName !== "A") d.remove(); };
+  document.body.appendChild(d);
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".lb").forEach(x => x.remove()); });
+
+const EMO = ["👍", "❤️", "😂", "✅", "🙏", "🔥"];
+function closeMenu() { document.querySelectorAll(".mact").forEach(x => x.remove()); }
+document.addEventListener("pointerdown", e => { if (!e.target.closest(".mact") && !e.target.closest("[data-more]")) closeMenu(); }, true);
+async function chatView(id, el) {
+  const [rows, ups] = await Promise.all([db("tasks?select=*&id=eq." + id), db("task_updates?select=*&task_id=eq." + id + "&order=created_at.asc")]);
+  const t = rows[0]; if (!t) { el.innerHTML = `<div class="empty">This task is gone.</div>`; CHAT = null; return; }
   if (!P.length) await load();
   const p = proj(t.project_id);
-  const waitQ = t.status === "waiting_on_mendel" ? (ups.find(u => u.author === "tab") || {}).body : "";
-  app.innerHTML = `<div class="two"><div class="card dt">
-      <div class="kv"><a href="#/p/${p.id}" style="color:${esc(p.color)};font-weight:700">${esc(p.name)}</a></div>
+  const C = CHAT = { id, t, ups, pend: [], el, sending: false, pinIx: 0 };
+  const waitQ = () => C.t.status === "waiting_on_mendel";
+  el.innerHTML = `<div class="chat">
+    <div class="chead"><div class="kv"><a class="pj" href="#/p/${p.id}" style="color:${esc(p.color)}">${esc(p.name)}</a></div>
       <h1>${esc(t.title)}</h1>
-      <div class="kv">${chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}<span>Updated ${ago(t.updated_at)}</span></div>
-      ${t.details ? `<div class="det">${esc(t.details)}</div>` : ""}
-      <label for="st">Status</label>
-      <select id="st">${Object.entries(ST).map(([k, l]) => `<option value="${k}" ${k === t.status ? "selected" : ""}>${l}</option>`).join("")}</select>
-      <label for="cm">${waitQ ? "Your answer" : "Add a comment"}</label>
-      ${waitQ ? `<div class="muted small" style="margin:-2px 0 8px">Question: ${esc(waitQ)}</div>` : ""}
-      <textarea id="cm" placeholder="${waitQ ? "Type your answer…" : "Write a note or instruction…"}"></textarea>
-      <div class="acts"><button class="btn" id="send">${waitQ ? "Send answer" : "Add comment"}</button></div>
-      <div class="muted small" style="margin-top:12px">Created ${when(t.created_at)}${t.created_by === "mendel" ? " by you" : ""}</div>
+      <div class="kv"><select id="st" aria-label="Status">${Object.entries(ST).map(([k, l]) => `<option value="${k}" ${k === t.status ? "selected" : ""}>${l}</option>`).join("")}</select>${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}<span class="small" id="upd">Updated ${ago(t.updated_at)}</span></div>
+      ${t.details ? `<details ${WIDE() && t.details.length < 400 ? "open" : ""}><summary>Details</summary><div class="det">${linky(t.details)}</div></details>` : ""}
     </div>
-    <div class="card"><div style="font-weight:700;margin-bottom:6px">Updates</div>
-      ${ups.length ? `<ul class="tl">${ups.map(u => `<li class="${u.author === "mendel" ? "m" : ""}"><div class="who"><b>${u.author === "mendel" ? "You" : "Tab"}</b> · ${when(u.created_at)}</div><div class="bd">${esc(u.body)}</div></li>`).join("")}</ul>` : `<div class="muted">No updates yet.</div>`}
-    </div></div>`;
-  $("st").onchange = async e => { try { await db("tasks?id=eq." + id, { method: "PATCH", body: { status: e.target.value } }); toast("Status: " + ST[e.target.value]); task(id); } catch (x) { toast(x.message); } };
-  $("send").onclick = async () => {
-    const body = $("cm").value.trim(); if (!body) { $("cm").focus(); return; }
-    $("send").disabled = true;
-    try {
-      await db("task_updates", { method: "POST", body: { task_id: id, author: "mendel", body } });
-      if (t.status === "waiting_on_mendel") await db("tasks?id=eq." + id, { method: "PATCH", body: { status: "to_do" } });
-      toast(waitQ ? "Answer sent" : "Comment added"); task(id);
-    } catch (x) { toast(x.message); $("send").disabled = false; }
+    <div class="pinbar" id="pinbar" hidden></div>
+    <div class="msgs" id="msgs"></div>
+    <div class="composer"><div class="pend" id="pend" hidden></div>
+      <div class="rowc"><button class="ib" id="att" title="Add photo or PDF" aria-label="Add photo or PDF">📎</button>
+      <textarea id="cm" rows="1" placeholder="Message"></textarea><div class="rec" id="rec" hidden><span class="dotr"></span><span id="rect">Recording 0:00</span><span style="flex:1"></span><button class="ib" id="recx" style="width:34px;height:34px;font-size:15px;background:#fff" aria-label="Cancel recording">✕</button></div>
+      <button class="ib mic" id="mic" title="Record a voice message" aria-label="Record a voice message">🎤</button>
+      <button class="ib send" id="send" aria-label="Send">➤</button></div>
+      ${FINE() ? `<div class="hint">Enter to send · Shift+Enter for a new line · hover a message for reactions and pin</div>` : `<div class="hint">Long-press a message to react or pin</div>`}
+      <input type="file" id="fi" accept="image/*,application/pdf" multiple hidden></div></div>`;
+  const ms = el.querySelector("#msgs"), cm = el.querySelector("#cm");
+  C.ms = ms;
+  C.near = () => ms.scrollHeight - ms.scrollTop - ms.clientHeight < 120;
+  C.stick = () => { ms.scrollTop = ms.scrollHeight; };
+  C.stickIfNear = () => { if (C.wasNear !== false) C.stick(); };
+  ms.addEventListener("scroll", () => { C.wasNear = C.near(); const pill = ms.querySelector(".newpill"); if (pill && C.wasNear) pill.remove(); });
+  const drawPins = () => {
+    const pins = C.ups.filter(u => u.pinned), pb = el.querySelector("#pinbar");
+    pb.hidden = !pins.length; if (!pins.length) return;
+    if (C.pinIx >= pins.length) C.pinIx = 0;
+    const u = pins[pins.length - 1 - C.pinIx];
+    const label = (u.body || "").trim() || ((u.attachments || [])[0] ? ((u.attachments[0].mime || "").startsWith("image/") ? "📷 Photo" : (u.attachments[0].mime || "").startsWith("audio/") ? "🎤 Voice message" : "📄 " + u.attachments[0].name) : "");
+    pb.innerHTML = `<span>📌</span><span class="pt"><b>${u.author === "mendel" ? "You" : "Tab"}:</b> ${esc(label)}</span>${pins.length > 1 ? `<span class="pc2">${C.pinIx + 1} of ${pins.length}</span>` : ""}`;
+    pb.onclick = () => { jump(u.id); if (pins.length > 1) { C.pinIx = (C.pinIx + 1) % pins.length; drawPins(); } };
   };
+  const jump = uid => { const m = el.querySelector("#u-" + uid); if (!m) return; m.scrollIntoView({ block: "center", behavior: "smooth" }); m.classList.remove("flash"); void m.offsetWidth; m.classList.add("flash"); };
+  const render = (stick = true) => {
+    const keep = ms.scrollTop;
+    let h = "", lastDay = "";
+    for (const u of C.ups) { const d = dayl(u.created_at); if (d !== lastDay) { h += `<div class="day">${d}</div>`; lastDay = d; } h += msgHtml(u); }
+    ms.innerHTML = h || `<div class="empty">No messages yet. Write the first one below — text, photos, a PDF or a voice message.</div>`;
+    hydrate(ms); drawPins();
+    if (stick) C.stick(); else ms.scrollTop = keep;
+    C.sig = JSON.stringify(C.ups);
+  };
+  C.render = render;
+  const react = async (uid, e) => {
+    closeMenu();
+    try { const r = await db("rpc/react", { method: "POST", body: { uid, emoji: e } }); const u = C.ups.find(x => x.id === uid); if (u) u.reactions = r; render(false); } catch (x) { toast(x.message); }
+  };
+  const pin = async (uid, on) => {
+    closeMenu();
+    try { await db("rpc/pin", { method: "POST", body: { uid, on_: on } }); const u = C.ups.find(x => x.id === uid); if (u) u.pinned = on; C.pinIx = 0; render(false); toast(on ? "Pinned" : "Unpinned"); } catch (x) { toast(x.message); }
+  };
+  const menu = (uid, anchor) => {
+    closeMenu(); const u = C.ups.find(x => x.id === uid); if (!u) return;
+    const m = document.createElement("div"); m.className = "mact";
+    m.innerHTML = `<div class="em">${EMO.map(e => `<button data-e="${e}">${e}</button>`).join("")}<button data-e="+" title="Other emoji">＋</button></div>
+      <button class="it" data-a="pin">${u.pinned ? "Unpin" : "📌 Pin"}</button>${(u.body || "").trim() ? `<button class="it" data-a="copy">Copy text</button>` : ""}`;
+    document.body.appendChild(m);
+    const r = anchor.getBoundingClientRect(), mw = m.offsetWidth, mh = m.offsetHeight;
+    m.style.left = Math.max(8, Math.min(innerWidth - mw - 8, u.author === "mendel" ? r.right - mw : r.left)) + "px";
+    m.style.top = (r.top - mh - 8 > 8 ? r.top - mh - 8 : Math.min(innerHeight - mh - 8, r.bottom + 8)) + "px";
+    m.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { let e = b.dataset.e; if (e === "+") { e = (prompt("Type or pick an emoji") || "").trim().slice(0, 8); if (!e) return closeMenu(); } react(uid, e); });
+    m.querySelector('[data-a="pin"]').onclick = () => pin(uid, !u.pinned);
+    const cp = m.querySelector('[data-a="copy"]'); if (cp) cp.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(u.body).then(() => toast("Copied")); closeMenu(); };
+  };
+  ms.addEventListener("click", e => {
+    const b = e.target.closest(".ph"); if (b) { if (!C.lp) lightbox(b.dataset.path); return; }
+    const mo = e.target.closest("[data-more]"); if (mo) { menu(mo.dataset.more, mo.closest(".msg").querySelector(".bub")); return; }
+    const rx = e.target.closest("[data-rx]"); if (rx) react(rx.dataset.rx, rx.dataset.e);
+  });
+  let lpT = null, lpXY = null;
+  ms.addEventListener("pointerdown", e => { const bub = e.target.closest(".bub"); C.lp = false; if (!bub || e.pointerType === "mouse") return; lpXY = [e.clientX, e.clientY]; lpT = setTimeout(() => { C.lp = true; if (navigator.vibrate) navigator.vibrate(15); menu(bub.closest(".msg").dataset.id, bub); }, 480); });
+  const lpCancel = e => { if (lpT && (!lpXY || e.type !== "pointermove" || Math.hypot(e.clientX - lpXY[0], e.clientY - lpXY[1]) > 10)) { clearTimeout(lpT); lpT = null; } };
+  ["pointerup", "pointercancel", "pointermove"].forEach(ev => ms.addEventListener(ev, lpCancel));
+  ms.addEventListener("contextmenu", e => { if (e.target.closest(".bub") && !FINE()) e.preventDefault(); });
+  render();
+  const setPh = () => cm.placeholder = waitQ() ? "Type your answer…" : (innerWidth < 600 ? "Message" : "Message about this task…");
+  setPh();
+  const grow = () => { cm.style.height = "auto"; cm.style.height = Math.min(cm.scrollHeight + 2, 160) + "px"; };
+  cm.addEventListener("input", grow);
+  cm.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing && FINE()) { e.preventDefault(); send(); } });
+  cm.addEventListener("focus", () => setTimeout(() => { setH(); C.stick(); }, 300));
+  const drawPend = () => {
+    const pe = el.querySelector("#pend"); pe.hidden = !C.pend.length;
+    pe.innerHTML = C.pend.map((f, i) => `<div class="pi">${f.preview ? `<img src="${f.preview}" alt="">` : `📄<br>${esc(f.name.slice(0, 18))}`}<button data-rm="${i}" aria-label="Remove">✕</button></div>`).join("");
+    pe.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { C.pend.splice(+b.dataset.rm, 1); drawPend(); });
+  };
+  el.querySelector("#att").onclick = () => el.querySelector("#fi").click();
+  el.querySelector("#fi").onchange = async e => {
+    for (const f of [...e.target.files]) {
+      try {
+        if (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) { if (f.size > 20e6) throw new Error("PDF too big (max 20 MB)"); C.pend.push({ kind: "pdf", blob: f, name: f.name, mime: "application/pdf" }); }
+        else if (f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp|gif)$/i.test(f.name)) { const r = await shrink(f); C.pend.push({ kind: "image", blob: r.blob, w: r.w, h: r.h, preview: r.preview, name: f.name.replace(/\.\w+$/, "") + ".jpg", mime: "image/jpeg" }); }
+        else throw new Error("Only photos and PDFs");
+      } catch (x) { toast(x.message); }
+    }
+    e.target.value = ""; drawPend(); cm.focus();
+  };
+  el.querySelector("#st").onchange = async e => { try { const r = await db("tasks?id=eq." + id, { method: "PATCH", body: { status: e.target.value } }); C.t = r[0]; setPh(); toast("Status: " + ST[e.target.value]); refreshLists(true); } catch (x) { toast(x.message); } };
+  async function post(body, atts) {
+    const r = await db("task_updates", { method: "POST", body: { task_id: id, author: "mendel", body, attachments: atts } });
+    if (C.t.status === "waiting_on_mendel") { const r2 = await db("tasks?id=eq." + id, { method: "PATCH", body: { status: "to_do" } }); C.t = r2[0]; el.querySelector("#st").value = "to_do"; setPh(); }
+    for (const u of r) if (!C.ups.some(x => x.id === u.id)) C.ups.push(u);
+    render(); markSeen(id, Date.parse(r[0].created_at)); refreshLists(true);
+  }
+  async function send() {
+    if (C.rec) { stopRec(true); return; }
+    const body = cm.value.trim();
+    if ((!body && !C.pend.length) || C.sending) { if (!body) cm.focus(); return; }
+    C.sending = true; const sb = el.querySelector("#send"); sb.disabled = true;
+    try {
+      const atts = [];
+      for (const f of C.pend) {
+        const path = `tasks/${id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${f.kind === "pdf" ? "pdf" : "jpg"}`;
+        await upload(path, f.blob, f.mime);
+        atts.push(f.kind === "image" ? { path, name: f.name, mime: f.mime, width: f.w, height: f.h } : { path, name: f.name, mime: f.mime });
+      }
+      await post(body, atts);
+      cm.value = ""; grow(); C.pend = []; drawPend();
+    } catch (x) { toast(x.message); }
+    C.sending = false; sb.disabled = false;
+  }
+  // voice messages
+  const recUI = on => { el.querySelector("#rec").hidden = !on; cm.hidden = on; el.querySelector("#att").hidden = on; el.querySelector("#mic").classList.toggle("on", on); el.querySelector("#mic").textContent = on ? "■" : "🎤"; };
+  function stopRec(sendIt) { if (!C.rec) return; C.rec.send = sendIt; clearInterval(C.rec.tick); try { C.rec.mr.stop(); } catch {} }
+  el.querySelector("#recx").onclick = () => stopRec(false);
+  el.querySelector("#mic").onclick = async () => {
+    if (C.rec) { stopRec(true); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast("Voice recording isn't supported in this browser"); return; }
+    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { toast("Allow the microphone to record a voice message"); return; }
+    const type = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"].find(x => MediaRecorder.isTypeSupported(x)) || "";
+    const mr = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+    const R = C.rec = { mr, chunks: [], t0: Date.now(), send: false };
+    mr.ondataavailable = e => { if (e.data && e.data.size) R.chunks.push(e.data); };
+    mr.onstop = async () => {
+      stream.getTracks().forEach(x => x.stop()); C.rec = null; recUI(false);
+      if (!R.send) return;
+      const dur = (Date.now() - R.t0) / 1000; if (dur < 0.8) { toast("Hold on a bit longer to record"); return; }
+      const mime = (mr.mimeType || type || "audio/webm").split(";")[0].replace("video/", "audio/"), ext = mime.includes("mp4") ? "m4a" : mime.includes("ogg") ? "ogg" : "webm";
+      const sb = el.querySelector("#send"); sb.disabled = true; toast("Sending voice message…");
+      try { const path = `tasks/${id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`; await upload(path, new Blob(R.chunks, { type: mime }), mime); await post("", [{ path, name: "voice-message." + ext, mime, duration: Math.round(dur * 10) / 10, voice: true }]); }
+      catch (x) { toast(x.message); }
+      sb.disabled = false;
+    };
+    mr.start(250); recUI(true);
+    R.tick = setInterval(() => { const x = el.querySelector("#rect"); if (x) x.textContent = "Recording " + fmtDur((Date.now() - R.t0) / 1000); }, 500);
+  };
+  el.querySelector("#send").onclick = send;
+  if (FINE()) cm.focus();
+  markSeen(id, C.ups.length ? Date.parse(C.ups[C.ups.length - 1].created_at) : 0);
 }
+async function pollChat() {
+  const C = CHAT; if (!C || !document.body.contains(C.ms) || C.sending) return;
+  const [all, tr] = await Promise.all([db("task_updates?select=*&task_id=eq." + C.id + "&order=created_at.asc"), db("tasks?select=*&id=eq." + C.id)]);
+  if (CHAT !== C) return;
+  if (tr[0] && tr[0].status !== C.t.status) { C.t = tr[0]; const s = C.el.querySelector("#st"); if (s) s.value = C.t.status; }
+  if (JSON.stringify(all) === C.sig) return;
+  const hadNew = all.length > C.ups.length, near = C.near();
+  C.ups = all;
+  if (document.querySelector(".mact")) return;
+  C.render(hadNew && near);
+  if (hadNew && !near && !C.ms.querySelector(".newpill")) { const b = document.createElement("button"); b.className = "newpill"; b.textContent = "New message ↓"; b.onclick = () => { C.stick(); b.remove(); }; C.ms.appendChild(b); }
+  if (hadNew) markSeen(C.id, Date.parse(all[all.length - 1].created_at));
+}
+async function task(id) {
+  top("", "Back"); app.className = "chatmode";
+  await chatView(id, app);
+}
+
+// ---- desktop 3-pane ----
+let MID = "w", SEL = null;
+function wideShell() {
+  app.className = "wide"; document.body.classList.add("wd"); top("Command Center");
+  if (!$("pl")) app.innerHTML = `<div class="panes"><nav class="pane l" id="pl"></nav><section class="pane m" id="pm"></section><section class="pane r" id="pr"></section></div>`;
+}
+function drawLeft() {
+  const w = waiting().length;
+  $("pl").innerHTML = `<a class="nav ${MID === "w" ? "on" : ""}" href="#/"><span class="nm">Waiting on you</span>${w ? `<span class="wn">${w}</span>` : ""}</a>
+    <div class="sec">Projects</div>
+    ${P.map(p => { const open = T.filter(t => t.project_id === p.id && !["done", "cancelled"].includes(t.status)).length; return `<a class="nav ${MID === p.id ? "on" : ""}" href="#/p/${p.id}"><i style="background:${esc(p.color)}"></i><span class="nm">${esc(p.name)}</span>${ub(punread(p.id)) || `<span class="c">${open || ""}</span>`}</a>`; }).join("")}
+    <div class="foot"><button class="btn plain" id="np">+ New project</button><button class="btn plain" id="lo">Log out</button></div>`;
+  $("np").onclick = newProject; $("lo").onclick = () => { if (confirm("Log out?")) logout(); };
+}
+function drawMid() {
+  const pm = $("pm"), keep = pm.scrollTop;
+  if (MID === "w") { const w = waiting(); pm.innerHTML = `<h2 style="margin-top:4px">Waiting on you ${w.length ? `<span class="n">${w.length}</span>` : ""}</h2>${waitList(SEL)}`; }
+  else { const p = proj(MID); projectBody(p, pm, SEL, () => { if (PTAB === "handbook") { location.hash = "#/p/" + p.id; SEL = null; drawMid(); drawRight(); } else { drawMid(); drawRight(); } }); }
+  pm.scrollTop = keep;
+}
+async function drawRight() {
+  const pr = $("pr");
+  if (SEL) { if (!CHAT || CHAT.id !== SEL || !pr.contains(CHAT.ms)) await chatView(SEL, pr); return; }
+  CHAT = null;
+  if (MID !== "w" && PTAB === "handbook") { pr.innerHTML = `<div class="pad" id="hbw"></div>`; handbook(proj(MID), $("hbw")); return; }
+  if (MID === "w") { pr.innerHTML = `<div class="pad"><h2 style="margin-top:0">Projects</h2>${cards()}</div>`; return; }
+  pr.innerHTML = `<div class="ph0"><div><div style="font-size:34px">💬</div><div style="font-weight:600;margin-top:6px">Pick a task to open its chat</div><div class="small">Every task has its own conversation with Tab.</div></div></div>`;
+}
+async function wide(h) {
+  let m; wideShell();
+  if ((m = h.match(/^#\/t\/([\w-]+)/))) {
+    SEL = m[1]; if (!T.find(x => x.id === SEL)) await load();
+    const t = T.find(x => x.id === SEL); delete UNREAD[SEL];
+    if (t && !(MID === "w" && t.status === "waiting_on_mendel") && MID !== t.project_id) { MID = t.project_id; FILTER = "open"; }
+    const closed = t && ["done", "cancelled"].includes(t.status);
+    if (t && MID === t.project_id && ((FILTER === "open" && closed) || (!["open", "all"].includes(FILTER) && FILTER !== t.status))) FILTER = "all";
+    PTAB = "tasks";
+  } else if ((m = h.match(/^#\/p\/([\w-]+)/))) { if (MID !== m[1]) { FILTER = "open"; } MID = m[1]; SEL = null; if (!proj(MID).id) { location.hash = "#/"; return; } }
+  else { MID = "w"; SEL = null; PTAB = "tasks"; }
+  drawLeft(); drawMid(); await drawRight();
+}
+
+let busy = false;
+async function refreshLists(force) {
+  if (!S || busy) return; busy = true;
+  try {
+    const changed = await load();
+    if (!changed && !force) return;
+    if (document.querySelector(".sheet")) return;
+    if (WIDE() && $("pl")) { drawLeft(); drawMid(); if (!SEL && MID === "w") drawRight(); }
+    else if (!CHAT) { const h = location.hash; const a = document.activeElement; if (a && /TEXTAREA|INPUT/.test(a.tagName)) return; const y = window.scrollY; if (/^#\/p\//.test(h)) { if (PTAB === "tasks") { project(h.split("/")[2]); } } else home(); window.scrollTo(0, y); }
+  } catch {} finally { busy = false; }
+}
+async function poll() {
+  if (!S || document.visibilityState !== "visible") return;
+  try { await pollChat(); } catch {}
+  await refreshLists(false);
+}
+setInterval(poll, 20000);
 
 function sheet(html) { const d = document.createElement("div"); d.className = "sheet"; d.innerHTML = `<div class="box">${html}</div>`; d.onclick = e => { if (e.target === d) d.remove(); }; document.body.appendChild(d); return d; }
 
 async function newTask(pid) {
   if (!P.length) await load();
-  const cur = pid || (location.hash.match(/^#\/p\/([\w-]+)/) || [])[1] || "";
+  const cur = pid || (location.hash.match(/^#\/p\/([\w-]+)/) || [])[1] || (WIDE() && MID !== "w" ? MID : "");
   let pr = "normal";
   const d = sheet(`<h3>New task</h3><div class="muted small">Tab picks it up from here.</div>
     <label for="ntp">Project</label><select id="ntp">${cur ? "" : '<option value="">Choose a project…</option>'}${P.map(p => `<option value="${p.id}" ${p.id === cur ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select>
@@ -296,7 +677,7 @@ async function newTask(pid) {
     $("nts").disabled = true;
     try {
       const r = await db("tasks", { method: "POST", body: { project_id, title, details: $("ntd").value.trim(), priority: pr, status: "new", created_by: "mendel" } });
-      d.remove(); toast("Task saved"); location.hash = "#/t/" + r[0].id;
+      d.remove(); toast("Task saved"); await load(); if (WIDE()) { MID = project_id; FILTER = "open"; } location.hash = "#/t/" + r[0].id;
     } catch (x) { $("nte").textContent = x.message; $("nts").disabled = false; }
   };
 }
@@ -313,13 +694,13 @@ function newProject() {
   $("nps").onclick = async () => {
     const name = $("npn").value.trim(); if (!name) { $("npe").textContent = "Give it a name."; return; }
     $("nps").disabled = true;
-    try { const sort = Math.max(0, ...P.map(p => p.sort)) + 1; const r = await db("projects", { method: "POST", body: { name, color, sort } }); d.remove(); toast("Project created"); location.hash = "#/p/" + r[0].id; }
+    try { const sort = Math.max(0, ...P.map(p => p.sort)) + 1; const r = await db("projects", { method: "POST", body: { name, color, sort } }); d.remove(); toast("Project created"); await load(); location.hash = "#/p/" + r[0].id; }
     catch (x) { $("npe").textContent = x.message; $("nps").disabled = false; }
   };
 }
 
 function login() {
-  top("Command Center");
+  top("Command Center"); app.className = "";
   app.innerHTML = `<div class="login card"><h3 style="margin:0 0 4px;font-size:20px">Sign in</h3><div class="muted small">Private. Only you.</div>
     <form id="lf"><label for="le">Email</label><input type="email" id="le" autocomplete="username" autocapitalize="off" required>
     <label for="lp">Password</label><input type="password" id="lp" autocomplete="current-password" required>
@@ -331,19 +712,24 @@ function login() {
   };
 }
 
+let lastWide = null;
 async function route() {
-  document.querySelectorAll(".sheet").forEach(x => x.remove());
+  document.querySelectorAll(".sheet,.lb").forEach(x => x.remove());
   if (!S) return login();
   const h = location.hash; let m;
   try {
-    if ((m = h.match(/^#\/p\/([\w-]+)/))) await project(m[1]);
+    if (!P.length || !WIDE()) await load();
+    if (WIDE()) { lastWide = true; await wide(h); return; }
+    lastWide = false; CHAT = null; document.body.classList.remove("wd");
+    if ((m = h.match(/^#\/p\/([\w-]+)/))) project(m[1]);
     else if ((m = h.match(/^#\/t\/([\w-]+)/))) await task(m[1]);
-    else { FILTER = "open"; PTAB = "tasks"; await home(); }
+    else { FILTER = "open"; PTAB = "tasks"; home(); }
     window.scrollTo(0, 0);
-  } catch (x) { if (x.message !== "login") app.innerHTML = `<div class="empty">Couldn't load: ${esc(x.message)} <br><br><button class="btn" onclick="location.reload()">Try again</button></div>`; }
+  } catch (x) { if (x.message !== "login") { app.className = ""; app.innerHTML = `<div class="empty">Couldn't load: ${esc(x.message)} <br><br><button class="btn" onclick="location.reload()">Try again</button></div>`; } }
 }
 window.addEventListener("hashchange", route);
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S && !document.querySelector(".sheet") && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) route(); });
+window.addEventListener("resize", () => { if (S && lastWide !== null && WIDE() !== lastWide && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) { CHAT = null; app.innerHTML = ""; route(); } });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") poll(); });
 route();
 })();
 </script>
