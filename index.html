@@ -390,7 +390,7 @@ let CHAT = null;
 function fmtDur(x) { x = Math.round(x || 0); return Math.floor(x / 60) + ":" + String(x % 60).padStart(2, "0"); }
 function attHtml(a) {
   const mt = a.mime || "";
-  if (mt.startsWith("image/")) { const r = a.width && a.height ? `aspect-ratio:${a.width}/${a.height}` : "aspect-ratio:4/3"; return `<button class="ph" data-path="${esc(a.path)}" style="${r}"><img data-path="${esc(a.path)}" alt="${esc(a.name || "photo")}"></button>`; }
+  if (mt.startsWith("image/")) { const r = a.width && a.height ? `aspect-ratio:${a.width}/${a.height};width:${Math.round(Math.min(280, 300 * a.width / a.height))}px` : "aspect-ratio:4/3"; return `<button class="ph" data-path="${esc(a.path)}" style="${r}"><img data-path="${esc(a.path)}" alt="${esc(a.name || "photo")}"></button>`; }
   if (mt.startsWith("audio/") || (mt.startsWith("video/") && a.voice)) return `<div class="aud"><audio controls preload="metadata" data-path="${esc(a.path)}"></audio><small>🎤 Voice message${a.duration ? " · " + fmtDur(a.duration) : ""}</small></div>`;
   return `<a class="fchip" data-path="${esc(a.path)}" target="_blank" rel="noopener">📄 <span>${esc(a.name || "file")}</span></a>`;
 }
