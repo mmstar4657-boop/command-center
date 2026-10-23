@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Command">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<title>Command Center</title>
+<style>
+:root{--ac:#4f46e5;--ac2:#eef2ff;--ink:#0f172a;--mut:#64748b;--line:#e2e8f0;--bg:#f8fafc;--card:#fff;--r:14px}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);-webkit-text-size-adjust:100%}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 10px) 16px 10px}
+.top .in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:10px;min-height:44px}
+.brand{font-weight:700;font-size:19px;display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.brand .dot{width:26px;height:26px;border-radius:8px;background:var(--ac);display:inline-grid;place-items:center;color:#fff;font-size:14px;flex:none}
+.brand span.t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{border:0;background:none;font-size:17px;color:var(--ac);padding:10px 6px;min-height:44px;cursor:pointer;font-weight:600}
+.btn{border:0;border-radius:12px;background:var(--ac);color:#fff;font-weight:600;padding:0 16px;min-height:44px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:var(--ac2);color:var(--ac)}.btn.plain{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.55}
+main{max-width:1080px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom))}
+h2{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin:22px 4px 10px;font-weight:700;display:flex;align-items:center;gap:8px}
+h2 .n{background:var(--ac);color:#fff;border-radius:99px;font-size:12px;padding:1px 8px;letter-spacing:0}
+.list{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-top:1px solid var(--line);cursor:pointer;min-height:56px}
+.row:first-child{border-top:0}.row:active{background:#f1f5f9}
+@media(hover:hover){.row:hover{background:#f8fafc}}
+.row .bar{width:4px;align-self:stretch;border-radius:4px;flex:none}
+.row .main{flex:1;min-width:0}
+.row .tt{font-weight:600}.row .q{color:#334155;margin-top:3px}.row .meta{color:var(--mut);font-size:13px;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chev{color:#cbd5e1;font-size:22px;line-height:1;align-self:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;cursor:pointer;display:block;position:relative;overflow:hidden}
+.pc:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.pc .nm{font-weight:700;font-size:17px;margin-bottom:12px;padding-left:4px}
+.cnt{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cnt div{background:#f8fafc;border-radius:10px;padding:8px 6px;text-align:center}
+.cnt b{display:block;font-size:20px}.cnt small{color:var(--mut);font-size:11.5px;line-height:1.2;display:block}
+.cnt .w{background:#fff7ed}.cnt .w b{color:#c2410c}
+.chip{display:inline-block;border-radius:99px;font-size:12.5px;font-weight:600;padding:2px 10px;white-space:nowrap}
+.s-new{background:#eef2ff;color:#4338ca}.s-to_do{background:#f1f5f9;color:#334155}.s-working{background:#e0f2fe;color:#0369a1}
+.s-waiting_on_mendel{background:#ffedd5;color:#c2410c}.s-done{background:#dcfce7;color:#15803d}.s-cancelled{background:#f1f5f9;color:#94a3b8;text-decoration:line-through}
+.urg{background:#fee2e2;color:#b91c1c}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.f{border:1px solid var(--line);background:#fff;border-radius:99px;padding:0 14px;min-height:40px;white-space:nowrap;cursor:pointer;font-weight:500}
+.f.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.empty{color:var(--mut);padding:22px 16px;text-align:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.dt h1{font-size:22px;margin:4px 0 8px;line-height:1.25}
+.dt .det{white-space:pre-wrap;color:#334155;margin-top:12px}
+.kv{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--mut);font-size:14px}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{padding:12px 0 12px 18px;border-left:2px solid var(--line);margin-left:6px;position:relative}
+.tl li:before{content:"";position:absolute;left:-7px;top:16px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--ac)}
+.tl li.m:before{background:var(--ac)}
+.tl .who{font-size:13px;color:var(--mut)}.tl .who b{color:var(--ink)}
+.tl .bd{white-space:pre-wrap;margin-top:2px}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input[type=text],input[type=email],input[type=password],textarea,select{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:12px 14px;background:#fff;min-height:48px;font-size:16px}
+textarea{min-height:110px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--ac);outline-offset:0;border-color:var(--ac)}
+.seg{display:flex;gap:8px}.seg button{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:600;cursor:pointer}
+.seg button.on{border-color:var(--ac);background:var(--ac2);color:var(--ac)}
+.seg button.on.u{border-color:#dc2626;background:#fee2e2;color:#b91c1c}
+.acts{display:flex;gap:10px;margin-top:16px}.acts .btn{flex:1}
+.two{display:grid;gap:16px}
+@media(min-width:900px){.two{grid-template-columns:1.1fr .9fr;align-items:start}}
+.login{max-width:400px;margin:8vh auto;padding:0 16px}
+.err{color:#b91c1c;margin-top:10px;min-height:20px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;transition:transform .25s;z-index:20;font-weight:500}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.sheet{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.sheet .box{background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media(min-width:700px){.sheet{align-items:center}.sheet .box{border-radius:18px}}
+.sheet h3{margin:0 0 4px;font-size:19px}
+.muted{color:var(--mut)}.small{font-size:13px}
+.sw{display:flex;gap:8px;flex-wrap:wrap}.sw button{width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.sw button.on{box-shadow:0 0 0 2px var(--ink)}
+.hdr{display:flex;align-items:center;gap:10px;margin:6px 0 12px}
+.hdr .pn{font-size:22px;font-weight:700;flex:1;display:flex;align-items:center;gap:10px}
+.hdr .pn i{width:12px;height:12px;border-radius:50%;background:var(--c);display:inline-block}
+.allclear{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:var(--r);padding:14px 16px}
+.tabs{display:flex;gap:4px;background:#eef1f5;border-radius:12px;padding:4px;margin:0 0 14px;max-width:360px}
+.tabs button{flex:1;border:0;background:none;border-radius:9px;min-height:40px;font-weight:600;cursor:pointer;color:var(--mut)}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.hb{line-height:1.6}.hb h2,.hb h3,.hb h4{text-transform:none;letter-spacing:0;color:var(--ink);margin:18px 0 6px}.hb h2{font-size:20px}.hb h3{font-size:17px}.hb h4{font-size:15px}
+.hb>*:first-child{margin-top:0}.hb p{margin:6px 0}.hb ul,.hb ol{margin:6px 0;padding-left:22px}.hb li{margin:3px 0}
+.hb code{background:#f1f5f9;border-radius:6px;padding:1px 6px;font-size:14px;word-break:break-all}.hb a{color:var(--ac);text-decoration:underline}
+textarea.hbe{min-height:60vh;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+</style></head>
+<body>
+<header class="top"><div class="in" id="bar"></div></header>
+<main id="app"><div class="empty">Loading…</div></main>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+const SB = "https://xgxswoaxalhdfjjxelyt.supabase.co", KEY = "sb_publishable_O0fqxMtqt9gwXlNnHwTFCg_eGNQoo7W", SK = "cc_session_v1";
+const ST = { new: "New", to_do: "To do", working: "Working", waiting_on_mendel: "Waiting on you", done: "Done", cancelled: "Cancelled" };
+const COLORS = ["#2563eb", "#0d9488", "#7c3aed", "#d97706", "#475569", "#db2777", "#16a34a", "#dc2626"];
+const $ = id => document.getElementById(id), app = $("app"), bar = $("bar");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ago = iso => { const m = (Date.now() - Date.parse(iso)) / 6e4; if (m < 1) return "just now"; if (m < 60) return Math.round(m) + " min ago"; const h = m / 60; if (h < 24) return Math.round(h) + "h ago"; const d = new Date(iso); return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
+const when = iso => new Date(iso).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const chip = s => `<span class="chip s-${s}">${ST[s] || s}</span>`;
+function toast(t) { const e = $("toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("on"), 2000); }
+
+let S = null; try { S = JSON.parse(localStorage.getItem(SK)); } catch {}
+function save(d) { S = { at: d.access_token, rt: d.refresh_token, exp: Date.now() + (d.expires_in || 3600) * 1000 - 60e3, email: d.user && d.user.email }; localStorage.setItem(SK, JSON.stringify(S)); }
+async function auth(grant, body) {
+  const r = await fetch(SB + "/auth/v1/token?grant_type=" + grant, { method: "POST", headers: { apikey: KEY, "content-type": "application/json" }, body: JSON.stringify(body) });
+  const d = await r.json().catch(() => ({})); if (!r.ok || !d.access_token) throw new Error(d.error_description || d.msg || "Login failed"); save(d);
+}
+async function token() {
+  if (!S) throw new Error("login");
+  if (Date.now() > S.exp) { try { await auth("refresh_token", { refresh_token: S.rt }); } catch { logout(); throw new Error("login"); } }
+  return S.at;
+}
+async function db(path, opt = {}) {
+  const t = await token();
+  const h = { apikey: KEY, authorization: "Bearer " + t, "accept-profile": "command", "content-profile": "command", "content-type": "application/json" };
+  if (opt.method && opt.method !== "GET") h.prefer = "return=representation";
+  const r = await fetch(SB + "/rest/v1/" + path, { method: opt.method || "GET", headers: h, body: opt.body ? JSON.stringify(opt.body) : undefined });
+  if (r.status === 401) { logout(); throw new Error("login"); }
+  const d = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((d && (d.message || d.hint)) || "Error " + r.status);
+  return d;
+}
+
+function md(src) {
+  const inl = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  let out = "", list = null;
+  const close = () => { if (list) { out += `</${list}>`; list = null; } };
+  for (const raw of String(src || "").split("\n")) {
+    const l = raw.trimEnd(); let m;
+    if (!l.trim()) { close(); continue; }
+    if ((m = l.match(/^(#{1,3})\s+(.*)/))) { close(); const n = m[1].length + 1; out += `<h${n}>${inl(m[2])}</h${n}>`; continue; }
+    if ((m = l.match(/^\s*[-*]\s+(.*)/))) { if (list !== "ul") { close(); out += "<ul>"; list = "ul"; } out += `<li>${inl(m[1])}</li>`; continue; }
+    if ((m = l.match(/^\s*\d+[.)]\s+(.*)/))) { if (list !== "ol") { close(); out += "<ol>"; list = "ol"; } out += `<li>${inl(m[1])}</li>`; continue; }
+    close(); out += `<p>${inl(l)}</p>`;
+  }
+  close(); return out;
+}
+
+function logout() { S = null; localStorage.removeItem(SK); route(); }
+
+let P = [], T = [], LAST = {};
+async function load() {
+  const [p, t] = await Promise.all([db("projects?select=*&archived=eq.false&order=sort,created_at"), db("tasks?select=id,project_id,title,status,priority,updated_at,created_at&order=updated_at.desc")]);
+  P = p; T = t;
+  const w = T.filter(x => x.status === "waiting_on_mendel").map(x => x.id);
+  LAST = {};
+  if (w.length) {
+    const u = await db("task_updates?select=task_id,body,created_at&author=eq.tab&task_id=in.(" + w.join(",") + ")&order=created_at.desc");
+    for (const x of u) if (!LAST[x.task_id]) LAST[x.task_id] = x.body;
+  }
+}
+const proj = id => P.find(p => p.id === id) || { name: "", color: "#94a3b8" };
+
+function top(title, back) {
+  bar.innerHTML = (back ? `<button class="back" id="bk">‹ ${esc(back)}</button><div class="brand"><span class="t"></span></div>` : `<div class="brand"><span class="dot">✓</span><span class="t">${esc(title)}</span></div>`) +
+    (S ? `<button class="btn" id="nt">+ New task</button>` : "");
+  if (back) $("bk").onclick = () => history.length > 1 ? history.back() : (location.hash = "#/");
+  if ($("nt")) $("nt").onclick = () => newTask();
+}
+
+function taskRow(t, showProj, q) {
+  const p = proj(t.project_id);
+  return `<a class="row" href="#/t/${t.id}"><span class="bar" style="background:${esc(p.color)}"></span><div class="main"><div class="tt">${esc(t.title)}</div>` +
+    (q ? `<div class="q">${esc(q)}</div>` : "") +
+    `<div class="meta">${q ? "" : chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}${showProj ? `<span>${esc(p.name)}</span><span>·</span>` : ""}<span>${ago(t.updated_at)}</span></div></div><span class="chev">›</span></a>`;
+}
+
+async function home() {
+  top("Command Center");
+  await load();
+  const w = T.filter(t => t.status === "waiting_on_mendel").sort((a, b) => (b.priority === "urgent") - (a.priority === "urgent") || Date.parse(b.updated_at) - Date.parse(a.updated_at));
+  const cnt = (pid, ss) => T.filter(t => t.project_id === pid && ss.includes(t.status)).length;
+  app.innerHTML = `<h2>Waiting on you ${w.length ? `<span class="n">${w.length}</span>` : ""}</h2>` +
+    (w.length ? `<div class="list">${w.map(t => taskRow(t, true, LAST[t.id])).join("")}</div>` : `<div class="allclear">Nothing is waiting on you right now.</div>`) +
+    `<h2>Projects</h2><div class="grid">${P.map(p => `<a class="pc" href="#/p/${p.id}" style="--c:${esc(p.color)}"><div class="nm">${esc(p.name)}</div><div class="cnt">
+      <div><b>${cnt(p.id, ["new", "to_do"])}</b><small>To do</small></div><div><b>${cnt(p.id, ["working"])}</b><small>Working</small></div>
+      <div class="${cnt(p.id, ["waiting_on_mendel"]) ? "w" : ""}"><b>${cnt(p.id, ["waiting_on_mendel"])}</b><small>Waiting on you</small></div><div><b>${cnt(p.id, ["done"])}</b><small>Done</small></div></div></a>`).join("")}</div>
+    <div class="acts" style="max-width:420px"><button class="btn plain" id="np">+ New project</button><button class="btn plain" id="lo" style="flex:.6">Log out</button></div>`;
+  $("np").onclick = newProject; $("lo").onclick = () => { if (confirm("Log out?")) logout(); };
+}
+
+let FILTER = "open", PTAB = "tasks";
+async function handbook(p) {
+  const draw = () => {
+    app.querySelector("#pbody").innerHTML = `<div class="card"><div class="hb">${p.handbook ? md(p.handbook) : '<p class="muted">No handbook yet.</p>'}</div>
+      <div class="muted small" style="margin-top:14px">${p.handbook_updated_at ? "Last edited " + when(p.handbook_updated_at) : ""}</div>
+      <div class="acts" style="max-width:300px"><button class="btn ghost" id="hbed">Edit handbook</button></div></div>`;
+    $("hbed").onclick = edit;
+  };
+  const edit = () => {
+    app.querySelector("#pbody").innerHTML = `<div class="card"><div class="muted small">Markdown: # Heading, - list, **bold**. Never put passwords or keys here.</div>
+      <textarea class="hbe" id="hbt" style="margin-top:10px"></textarea>
+      <div class="acts"><button class="btn plain" id="hbc">Cancel</button><button class="btn" id="hbs">Save</button></div></div>`;
+    $("hbt").value = p.handbook || "";
+    $("hbc").onclick = draw;
+    $("hbs").onclick = async () => { $("hbs").disabled = true; try { const r = await db("projects?id=eq." + p.id, { method: "PATCH", body: { handbook: $("hbt").value, handbook_updated_at: new Date().toISOString() } }); Object.assign(p, r[0]); toast("Handbook saved"); draw(); } catch (x) { toast(x.message); $("hbs").disabled = false; } };
+  };
+  draw();
+}
+
+async function project(id) {
+  await load();
+  const p = proj(id); if (!p.id) { location.hash = "#/"; return; }
+  top("", "Home");
+  const all = T.filter(t => t.project_id === id);
+  const F = [["open", "Open"], ["new", "New"], ["to_do", "To do"], ["working", "Working"], ["waiting_on_mendel", "Waiting on you"], ["done", "Done"], ["cancelled", "Cancelled"], ["all", "All"]];
+  const pick = f => f === "all" ? all : f === "open" ? all.filter(t => !["done", "cancelled"].includes(t.status)) : all.filter(t => t.status === f);
+  const draw = () => {
+    const list = pick(FILTER);
+    app.innerHTML = `<div class="hdr" style="--c:${esc(p.color)}"><div class="pn"><i></i>${esc(p.name)}</div></div>
+      <div class="tabs"><button data-pt="tasks" class="${PTAB === "tasks" ? "on" : ""}">Tasks</button><button data-pt="handbook" class="${PTAB === "handbook" ? "on" : ""}">Handbook</button></div>
+      <div id="pbody">
+      <div class="filters">${F.map(([k, l]) => `<button class="f ${FILTER === k ? "on" : ""}" data-f="${k}">${l} <span class="muted small">${pick(k).length}</span></button>`).join("")}</div>
+      ${list.length ? `<div class="list">${list.map(t => taskRow(t, false)).join("")}</div>` : `<div class="list"><div class="empty">No tasks here.</div></div>`}
+      <div class="acts" style="max-width:420px"><button class="btn ghost" id="pnt">+ New task in ${esc(p.name)}</button></div></div>`;
+    app.querySelectorAll("[data-pt]").forEach(b => b.onclick = () => { PTAB = b.dataset.pt; draw(); });
+    if (PTAB === "handbook") return handbook(p);
+    app.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { FILTER = b.dataset.f; draw(); });
+    $("pnt").onclick = () => newTask(id);
+  };
+  draw();
+}
+
+async function task(id) {
+  top("", "Back");
+  const [rows, ups] = await Promise.all([db("tasks?select=*&id=eq." + id), db("task_updates?select=*&task_id=eq." + id + "&order=created_at.desc")]);
+  const t = rows[0]; if (!t) { app.innerHTML = `<div class="empty">This task is gone.</div>`; return; }
+  if (!P.length) await load();
+  const p = proj(t.project_id);
+  const waitQ = t.status === "waiting_on_mendel" ? (ups.find(u => u.author === "tab") || {}).body : "";
+  app.innerHTML = `<div class="two"><div class="card dt">
+      <div class="kv"><a href="#/p/${p.id}" style="color:${esc(p.color)};font-weight:700">${esc(p.name)}</a></div>
+      <h1>${esc(t.title)}</h1>
+      <div class="kv">${chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}<span>Updated ${ago(t.updated_at)}</span></div>
+      ${t.details ? `<div class="det">${esc(t.details)}</div>` : ""}
+      <label for="st">Status</label>
+      <select id="st">${Object.entries(ST).map(([k, l]) => `<option value="${k}" ${k === t.status ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <label for="cm">${waitQ ? "Your answer" : "Add a comment"}</label>
+      ${waitQ ? `<div class="muted small" style="margin:-2px 0 8px">Question: ${esc(waitQ)}</div>` : ""}
+      <textarea id="cm" placeholder="${waitQ ? "Type your answer…" : "Write a note or instruction…"}"></textarea>
+      <div class="acts"><button class="btn" id="send">${waitQ ? "Send answer" : "Add comment"}</button></div>
+      <div class="muted small" style="margin-top:12px">Created ${when(t.created_at)}${t.created_by === "mendel" ? " by you" : ""}</div>
+    </div>
+    <div class="card"><div style="font-weight:700;margin-bottom:6px">Updates</div>
+      ${ups.length ? `<ul class="tl">${ups.map(u => `<li class="${u.author === "mendel" ? "m" : ""}"><div class="who"><b>${u.author === "mendel" ? "You" : "Tab"}</b> · ${when(u.created_at)}</div><div class="bd">${esc(u.body)}</div></li>`).join("")}</ul>` : `<div class="muted">No updates yet.</div>`}
+    </div></div>`;
+  $("st").onchange = async e => { try { await db("tasks?id=eq." + id, { method: "PATCH", body: { status: e.target.value } }); toast("Status: " + ST[e.target.value]); task(id); } catch (x) { toast(x.message); } };
+  $("send").onclick = async () => {
+    const body = $("cm").value.trim(); if (!body) { $("cm").focus(); return; }
+    $("send").disabled = true;
+    try {
+      await db("task_updates", { method: "POST", body: { task_id: id, author: "mendel", body } });
+      if (t.status === "waiting_on_mendel") await db("tasks?id=eq." + id, { method: "PATCH", body: { status: "to_do" } });
+      toast(waitQ ? "Answer sent" : "Comment added"); task(id);
+    } catch (x) { toast(x.message); $("send").disabled = false; }
+  };
+}
+
+function sheet(html) { const d = document.createElement("div"); d.className = "sheet"; d.innerHTML = `<div class="box">${html}</div>`; d.onclick = e => { if (e.target === d) d.remove(); }; document.body.appendChild(d); return d; }
+
+async function newTask(pid) {
+  if (!P.length) await load();
+  const cur = pid || (location.hash.match(/^#\/p\/([\w-]+)/) || [])[1] || "";
+  let pr = "normal";
+  const d = sheet(`<h3>New task</h3><div class="muted small">Tab picks it up from here.</div>
+    <label for="ntp">Project</label><select id="ntp">${cur ? "" : '<option value="">Choose a project…</option>'}${P.map(p => `<option value="${p.id}" ${p.id === cur ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select>
+    <label for="ntt">Title</label><input type="text" id="ntt" placeholder="What needs doing?" maxlength="200">
+    <label for="ntd">Details</label><textarea id="ntd" placeholder="Anything Tab should know (optional)"></textarea>
+    <label>Priority</label><div class="seg"><button class="on" data-p="normal">Normal</button><button data-p="urgent">Urgent</button></div>
+    <div class="err" id="nte"></div>
+    <div class="acts"><button class="btn plain" id="ntc">Cancel</button><button class="btn" id="nts">Save task</button></div>`);
+  d.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { pr = b.dataset.p; d.querySelectorAll("[data-p]").forEach(x => x.className = x === b ? "on" + (pr === "urgent" ? " u" : "") : ""); });
+  $("ntc").onclick = () => d.remove();
+  setTimeout(() => $("ntt").focus(), 50);
+  $("nts").onclick = async () => {
+    const project_id = $("ntp").value, title = $("ntt").value.trim();
+    if (!project_id) { $("nte").textContent = "Pick a project."; return; }
+    if (!title) { $("nte").textContent = "Give it a title."; return; }
+    $("nts").disabled = true;
+    try {
+      const r = await db("tasks", { method: "POST", body: { project_id, title, details: $("ntd").value.trim(), priority: pr, status: "new", created_by: "mendel" } });
+      d.remove(); toast("Task saved"); location.hash = "#/t/" + r[0].id;
+    } catch (x) { $("nte").textContent = x.message; $("nts").disabled = false; }
+  };
+}
+
+function newProject() {
+  let color = COLORS[P.length % COLORS.length];
+  const d = sheet(`<h3>New project</h3>
+    <label for="npn">Name</label><input type="text" id="npn" maxlength="80" placeholder="Project name">
+    <label>Color</label><div class="sw">${COLORS.map(c => `<button style="background:${c}" data-c="${c}" class="${c === color ? "on" : ""}" aria-label="color"></button>`).join("")}</div>
+    <div class="err" id="npe"></div>
+    <div class="acts"><button class="btn plain" id="npc">Cancel</button><button class="btn" id="nps">Create project</button></div>`);
+  d.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { color = b.dataset.c; d.querySelectorAll("[data-c]").forEach(x => x.classList.toggle("on", x === b)); });
+  $("npc").onclick = () => d.remove();
+  $("nps").onclick = async () => {
+    const name = $("npn").value.trim(); if (!name) { $("npe").textContent = "Give it a name."; return; }
+    $("nps").disabled = true;
+    try { const sort = Math.max(0, ...P.map(p => p.sort)) + 1; const r = await db("projects", { method: "POST", body: { name, color, sort } }); d.remove(); toast("Project created"); location.hash = "#/p/" + r[0].id; }
+    catch (x) { $("npe").textContent = x.message; $("nps").disabled = false; }
+  };
+}
+
+function login() {
+  top("Command Center");
+  app.innerHTML = `<div class="login card"><h3 style="margin:0 0 4px;font-size:20px">Sign in</h3><div class="muted small">Private. Only you.</div>
+    <form id="lf"><label for="le">Email</label><input type="email" id="le" autocomplete="username" autocapitalize="off" required>
+    <label for="lp">Password</label><input type="password" id="lp" autocomplete="current-password" required>
+    <div class="err" id="lerr"></div><div class="acts"><button class="btn" id="lb">Sign in</button></div></form></div>`;
+  $("lf").onsubmit = async e => {
+    e.preventDefault(); $("lb").disabled = true; $("lerr").textContent = "";
+    try { await auth("password", { email: $("le").value.trim(), password: $("lp").value }); route(); }
+    catch (x) { $("lerr").textContent = /invalid/i.test(x.message) ? "Wrong email or password." : x.message; $("lb").disabled = false; }
+  };
+}
+
+async function route() {
+  document.querySelectorAll(".sheet").forEach(x => x.remove());
+  if (!S) return login();
+  const h = location.hash; let m;
+  try {
+    if ((m = h.match(/^#\/p\/([\w-]+)/))) await project(m[1]);
+    else if ((m = h.match(/^#\/t\/([\w-]+)/))) await task(m[1]);
+    else { FILTER = "open"; PTAB = "tasks"; await home(); }
+    window.scrollTo(0, 0);
+  } catch (x) { if (x.message !== "login") app.innerHTML = `<div class="empty">Couldn't load: ${esc(x.message)} <br><br><button class="btn" onclick="location.reload()">Try again</button></div>`; }
+}
+window.addEventListener("hashchange", route);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && S && !document.querySelector(".sheet") && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) route(); });
+route();
+})();
+</script>
+</body></html>
