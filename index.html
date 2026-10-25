@@ -174,6 +174,16 @@ body.wd .top .in{max-width:none}
 .rx button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:1px 8px;font-size:14px;cursor:pointer;line-height:1.5}
 .rx button.mine{border-color:var(--ac);background:var(--ac2)}
 .tick{margin-left:3px;letter-spacing:-3px;color:var(--mut)}.tick.rd{color:#0ea5e9;font-weight:700}
+/* Tab is typing (WhatsApp style) */
+.typ{color:#16a34a;font-style:italic;font-size:14px;margin-top:3px;font-weight:500}
+.row.typing .q{display:none}
+.msg.typing .bub{display:inline-flex;align-items:center;gap:5px;padding:12px 14px;min-height:38px;border-radius:18px 18px 18px 6px}
+.msg.typing .bub i{width:7px;height:7px;border-radius:50%;background:#94a3b8;display:block;animation:tydot 1.3s infinite ease-in-out}
+.msg.typing .bub i:nth-child(2){animation-delay:.18s}.msg.typing .bub i:nth-child(3){animation-delay:.36s}
+.msg.typing .mt{font-style:italic}
+@keyframes tydot{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-4px);opacity:1}}
+@media (prefers-reduced-motion:reduce){.msg.typing .bub i{animation:none;opacity:.7}}
+
 .bwrap{display:flex;align-items:center;gap:4px;max-width:100%}.msg.m .bwrap{flex-direction:row-reverse}
 .bwrap .bub{max-width:min(78vw,560px)}
 .more{opacity:0;border:0;background:none;color:var(--mut);font-size:18px;cursor:pointer;padding:4px 6px;border-radius:8px}
@@ -289,12 +299,31 @@ function logout() { S = null; localStorage.removeItem(SK); CHAT = null; route();
 
 // ---- data ----
 let P = [], T = [], LAST = {}, UNREAD = {}, SEEN = {}, SIG = "";
+// "Tab is typing…": command.tab_typing (task_id, until), written only by Tab's CLI; read-only for Mendel.
+let TY = {};
+const typing = id => (TY[id] || 0) > Date.now();
+async function loadTyping() {
+  try { const r = await db("tab_typing?select=task_id,until"); TY = {}; for (const x of r || []) TY[x.task_id] = Date.parse(x.until); } catch {}
+}
+let TYSIG = "";
+function patchTyping() {
+  const on = Object.keys(TY).filter(typing).sort(), sig = on.join(",");
+  document.querySelectorAll('a.row[href^="#/t/"]').forEach(a => {
+    const id = a.getAttribute("href").slice(4), want = typing(id), m = a.querySelector(".main");
+    a.classList.toggle("typing", want);
+    const ex = a.querySelector(".typ");
+    if (want && !ex && m) { const d = document.createElement("div"); d.className = "typ"; d.textContent = "typing…"; const tt = m.querySelector(".tt"); tt ? tt.after(d) : m.prepend(d); }
+    if (!want && ex) ex.remove();
+  });
+  if (CHAT && CHAT.drawTyping) CHAT.drawTyping();
+  const changed = sig !== TYSIG; TYSIG = sig; return changed;
+}
 async function load() {
   const [p, t, tu, sn] = await Promise.all([
     db("projects?select=*&archived=eq.false&order=sort,created_at"),
     db("tasks?select=id,project_id,title,status,priority,updated_at,created_at&order=updated_at.desc"),
     db("task_updates?select=task_id,body,created_at&author=eq.tab&order=created_at.desc&limit=3000"),
-    db("task_seen?select=task_id,seen_at")]);
+    db("task_seen?select=task_id,seen_at"), loadTyping()]);
   P = p; T = t; SEEN = {}; for (const x of sn) SEEN[x.task_id] = Date.parse(x.seen_at);
   LAST = {}; UNREAD = {};
   for (const x of tu) {
@@ -323,8 +352,9 @@ function top(title, back) {
 
 function taskRow(t, showProj, q, sel) {
   const p = proj(t.project_id);
-  return `<a class="row${sel ? " sel" : ""}" href="#/t/${t.id}"><span class="bar" style="background:${esc(p.color)}"></span><div class="main"><div class="tt">${esc(t.title)}</div>` +
+  return `<a class="row${sel ? " sel" : ""}${typing(t.id) ? " typing" : ""}" href="#/t/${t.id}"><span class="bar" style="background:${esc(p.color)}"></span><div class="main"><div class="tt">${esc(t.title)}</div>` +
     (q ? `<div class="q">${esc(q)}</div>` : "") +
+    (typing(t.id) ? `<div class="typ">typing…</div>` : "") +
     `<div class="meta">${q ? "" : chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}${showProj ? `<span>${esc(p.name)}</span><span>·</span>` : ""}<span>${ago(t.updated_at)}</span></div></div>${ub(UNREAD[t.id])}<span class="chev">›</span></a>`;
 }
 const waiting = () => { const ps = id => (P.find(p => p.id === id) || { sort: 999 }).sort; return T.filter(t => t.status === "waiting_on_mendel").sort((a, b) => (b.priority === "urgent") - (a.priority === "urgent") || ps(a.project_id) - ps(b.project_id) || Date.parse(a.created_at) - Date.parse(b.created_at)); };
@@ -399,7 +429,7 @@ function msgHtml(u) {
   const body = (u.body || "").trim(), me = u.author === "mendel";
   const cls = at.length ? (body ? "withmedia" : "media") : "";
   const rx = Object.entries(u.reactions || {}).filter(([, w]) => w && w.length);
-  const tick = me ? (u.read_by_tab_at ? `<span class="tick rd" title="Read by Tab">✓✓</span>` : `<span class="tick" title="Sent">✓</span>`) : "";
+  const tick = me ? (u.read_by_tab_at ? `<span class="tick rd" title="Read by Tab">✓✓</span>` : u.id ? `<span class="tick" title="Delivered to Tab">✓✓</span>` : `<span class="tick" title="Sending">✓</span>`) : "";
   return `<div class="msg ${me ? "m" : "t"}${u.pinned ? " pinned" : ""}" data-id="${u.id}" id="u-${u.id}"><div class="bwrap"><div class="bub ${cls}">${at.length ? `<div class="atts">${at.map(attHtml).join("")}</div>` : ""}${body ? `<div class="txt">${linky(body)}</div>` : ""}</div><button class="more" data-more="${u.id}" aria-label="Message options">⋯</button></div>` +
     (rx.length ? `<div class="rx">${rx.map(([e, w]) => `<button data-rx="${u.id}" data-e="${esc(e)}" class="${w.includes("mendel") ? "mine" : ""}" title="${w.map(x => x === "mendel" ? "You" : "Tab").join(", ")}">${esc(e)}${w.length > 1 ? " " + w.length : ""}</button>`).join("")}</div>` : "") +
     `<div class="mt">${u.pinned ? "📌 " : ""}${me ? "You" : "Tab"} · ${hm(u.created_at)}${tick}</div></div>`;
@@ -467,6 +497,18 @@ async function chatView(id, el) {
     hydrate(ms); drawPins();
     if (stick) C.stick(); else ms.scrollTop = keep;
     C.sig = JSON.stringify(C.ups);
+    C.drawTyping(true);
+  };
+  C.drawTyping = (fresh) => {
+    const on = typing(id), ex = ms.querySelector("#tybub");
+    if (on && ex && !fresh) return;
+    const near = C.near();
+    if (ex) ex.remove();
+    if (!on) return;
+    const d = document.createElement("div"); d.className = "msg t typing"; d.id = "tybub"; d.setAttribute("aria-live", "polite");
+    d.innerHTML = `<div class="bub" aria-label="Tab is typing"><i></i><i></i><i></i></div><div class="mt">Tab is typing…</div>`;
+    const pill = ms.querySelector(".newpill"); pill ? ms.insertBefore(d, pill) : ms.appendChild(d);
+    if (near || fresh) C.stickIfNear();
   };
   C.render = render;
   const react = async (uid, e) => {
@@ -575,6 +617,7 @@ async function chatView(id, el) {
   el.querySelector("#send").onclick = send;
   if (FINE()) cm.focus();
   markSeen(id, C.ups.length ? Date.parse(C.ups[C.ups.length - 1].created_at) : 0);
+  pollTyping();
 }
 async function pollChat() {
   const C = CHAT; if (!C || !document.body.contains(C.ms) || C.sending) return;
@@ -653,6 +696,21 @@ async function poll() {
   await refreshLists(false);
 }
 setInterval(poll, 20000);
+// Typing indicator: tiny read every 4 s; while Tab is typing in the open chat, the chat itself refreshes every 4 s too,
+// so Tab's reply lands at the moment the dots go away.
+let tyBusy = false;
+async function pollTyping() {
+  if (!S || tyBusy || document.visibilityState !== "visible") return; tyBusy = true;
+  try {
+    const wasOpen = CHAT && typing(CHAT.id);
+    await loadTyping();
+    const isOpen = CHAT && typing(CHAT.id);
+    if (CHAT && (wasOpen || isOpen)) { try { await pollChat(); } catch {} }
+    patchTyping();
+  } finally { tyBusy = false; }
+}
+setInterval(pollTyping, 4000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pollTyping(); });
 
 function sheet(html) { const d = document.createElement("div"); d.className = "sheet"; d.innerHTML = `<div class="box">${html}</div>`; d.onclick = e => { if (e.target === d) d.remove(); }; document.body.appendChild(d); return d; }
 
