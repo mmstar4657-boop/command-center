@@ -176,7 +176,7 @@ body.wd .top .in{max-width:none}
 .tick{margin-left:3px;letter-spacing:-3px;color:var(--mut)}.tick.rd{color:#0ea5e9;font-weight:700}
 /* Tab is typing (WhatsApp style) */
 .typ{color:#16a34a;font-style:italic;font-size:14px;margin-top:3px;font-weight:500}
-.row.typing .q{display:none}
+.row.typing .q{display:none}.row .q.lm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mut)}.row .q.lm .tick{margin:0 4px 0 0}
 .msg.typing .bub{display:inline-flex;align-items:center;gap:5px;padding:12px 14px;min-height:38px;border-radius:18px 18px 18px 6px}
 .msg.typing .bub i{width:7px;height:7px;border-radius:50%;background:#94a3b8;display:block;animation:tydot 1.3s infinite ease-in-out}
 .msg.typing .bub i:nth-child(2){animation-delay:.18s}.msg.typing .bub i:nth-child(3){animation-delay:.36s}
@@ -295,10 +295,10 @@ function md(src) {
   close(); return out;
 }
 
-function logout() { S = null; localStorage.removeItem(SK); CHAT = null; route(); }
+function logout() { S = null; localStorage.removeItem(SK); CHAT = null; try { RT.ws && RT.ws.close(); } catch {} route(); }
 
 // ---- data ----
-let P = [], T = [], LAST = {}, UNREAD = {}, SEEN = {}, SIG = "";
+let P = [], T = [], LAST = {}, LASTAT = {}, MLAST = {}, UNREAD = {}, SEEN = {}, SIG = "";
 // "Tab is typing…": command.tab_typing (task_id, until), written only by Tab's CLI; read-only for Mendel.
 let TY = {};
 const typing = id => (TY[id] || 0) > Date.now();
@@ -319,19 +319,21 @@ function patchTyping() {
   const changed = sig !== TYSIG; TYSIG = sig; return changed;
 }
 async function load() {
-  const [p, t, tu, sn] = await Promise.all([
+  const [p, t, tu, sn, , mu] = await Promise.all([
     db("projects?select=*&archived=eq.false&order=sort,created_at"),
     db("tasks?select=id,project_id,title,status,priority,updated_at,created_at&order=updated_at.desc"),
     db("task_updates?select=task_id,body,created_at&author=eq.tab&order=created_at.desc&limit=3000"),
-    db("task_seen?select=task_id,seen_at"), loadTyping()]);
+    db("task_seen?select=task_id,seen_at"), loadTyping(),
+    db("task_updates?select=id,task_id,body,attachments,created_at,read_by_tab_at&author=eq.mendel&order=created_at.desc&limit=2000").catch(() => [])]);
   P = p; T = t; SEEN = {}; for (const x of sn) SEEN[x.task_id] = Date.parse(x.seen_at);
-  LAST = {}; UNREAD = {};
+  LAST = {}; LASTAT = {}; MLAST = {}; UNREAD = {};
+  for (const x of mu || []) if (!(x.task_id in MLAST)) MLAST[x.task_id] = x;
   for (const x of tu) {
-    if (!(x.task_id in LAST)) LAST[x.task_id] = x.body;
+    if (!(x.task_id in LAST)) { LAST[x.task_id] = x.body; LASTAT[x.task_id] = Date.parse(x.created_at); }
     if (Date.parse(x.created_at) > (SEEN[x.task_id] || 0)) UNREAD[x.task_id] = (UNREAD[x.task_id] || 0) + 1;
   }
   if (CHAT) delete UNREAD[CHAT.id];
-  const sig = JSON.stringify([P.map(x => [x.id, x.name, x.color]), T.map(x => [x.id, x.status, x.title, x.priority, x.updated_at]), UNREAD]);
+  const sig = JSON.stringify([P.map(x => [x.id, x.name, x.color]), T.map(x => [x.id, x.status, x.title, x.priority, x.updated_at]), UNREAD, Object.values(MLAST).map(x => [x.id, !!x.read_by_tab_at])]);
   const changed = sig !== SIG; SIG = sig; return changed;
 }
 const proj = id => P.find(p => p.id === id) || { name: "", color: "#94a3b8" };
@@ -350,10 +352,16 @@ function top(title, back) {
   setH();
 }
 
+// Mendel's last message, when it is newer than Tab's last reply: "✓✓ text" (blue once Tab has read it), like WhatsApp's chat list.
+function myLast(id) {
+  const m = MLAST[id]; if (!m || Date.parse(m.created_at) <= (LASTAT[id] || 0)) return "";
+  const txt = (m.body || "").trim() || (Array.isArray(m.attachments) && m.attachments.length ? (m.attachments.some(a => /^audio/.test(a.mime || "")) ? "🎤 Voice message" : /pdf/.test((m.attachments[0] || {}).mime || "") ? "📄 PDF" : "📷 Photo") : "");
+  return `<div class="q lm"><span class="tick${m.read_by_tab_at ? " rd" : ""}" data-tk="${m.id}">✓✓</span> ${esc(txt)}</div>`;
+}
 function taskRow(t, showProj, q, sel) {
-  const p = proj(t.project_id);
+  const p = proj(t.project_id), ml = myLast(t.id); if (ml) q = "";
   return `<a class="row${sel ? " sel" : ""}${typing(t.id) ? " typing" : ""}" href="#/t/${t.id}"><span class="bar" style="background:${esc(p.color)}"></span><div class="main"><div class="tt">${esc(t.title)}</div>` +
-    (q ? `<div class="q">${esc(q)}</div>` : "") +
+    (q ? `<div class="q">${esc(q)}</div>` : ml) +
     (typing(t.id) ? `<div class="typ">typing…</div>` : "") +
     `<div class="meta">${q ? "" : chip(t.status)}${t.priority === "urgent" ? '<span class="chip urg">Urgent</span>' : ""}${showProj ? `<span>${esc(p.name)}</span><span>·</span>` : ""}<span>${ago(t.updated_at)}</span></div></div>${ub(UNREAD[t.id])}<span class="chev">›</span></a>`;
 }
@@ -429,7 +437,7 @@ function msgHtml(u) {
   const body = (u.body || "").trim(), me = u.author === "mendel";
   const cls = at.length ? (body ? "withmedia" : "media") : "";
   const rx = Object.entries(u.reactions || {}).filter(([, w]) => w && w.length);
-  const tick = me ? (u.read_by_tab_at ? `<span class="tick rd" title="Read by Tab">✓✓</span>` : u.id ? `<span class="tick" title="Delivered to Tab">✓✓</span>` : `<span class="tick" title="Sending">✓</span>`) : "";
+  const tick = me ? (u.read_by_tab_at ? `<span class="tick rd" data-tk="${u.id}" title="Read by Tab">✓✓</span>` : u.id ? `<span class="tick" data-tk="${u.id}" title="Delivered to Tab">✓✓</span>` : `<span class="tick" title="Sending">✓</span>`) : "";
   return `<div class="msg ${me ? "m" : "t"}${u.pinned ? " pinned" : ""}" data-id="${u.id}" id="u-${u.id}"><div class="bwrap"><div class="bub ${cls}">${at.length ? `<div class="atts">${at.map(attHtml).join("")}</div>` : ""}${body ? `<div class="txt">${linky(body)}</div>` : ""}</div><button class="more" data-more="${u.id}" aria-label="Message options">⋯</button></div>` +
     (rx.length ? `<div class="rx">${rx.map(([e, w]) => `<button data-rx="${u.id}" data-e="${esc(e)}" class="${w.includes("mendel") ? "mine" : ""}" title="${w.map(x => x === "mendel" ? "You" : "Tab").join(", ")}">${esc(e)}${w.length > 1 ? " " + w.length : ""}</button>`).join("")}</div>` : "") +
     `<div class="mt">${u.pinned ? "📌 " : ""}${me ? "You" : "Tab"} · ${hm(u.created_at)}${tick}</div></div>`;
@@ -570,7 +578,9 @@ async function chatView(id, el) {
     const r = await db("task_updates", { method: "POST", body: { task_id: id, author: "mendel", body, attachments: atts } });
     if (C.t.status === "waiting_on_mendel") { const r2 = await db("tasks?id=eq." + id, { method: "PATCH", body: { status: "to_do" } }); C.t = r2[0]; el.querySelector("#st").value = "to_do"; setPh(); }
     for (const u of r) if (!C.ups.some(x => x.id === u.id)) C.ups.push(u);
-    render(); markSeen(id, Date.parse(r[0].created_at)); refreshLists(true);
+    // WhatsApp-style: Tab starts "typing…" the moment Mendel sends (the DB trigger does the same server-side for 2 min).
+    TY[id] = Math.max(TY[id] || 0, Date.now() + 120e3);
+    render(); patchTyping(); markSeen(id, Date.parse(r[0].created_at)); refreshLists(true);
   }
   async function send() {
     if (C.rec) { stopRec(true); return; }
@@ -696,21 +706,93 @@ async function poll() {
   await refreshLists(false);
 }
 setInterval(poll, 20000);
-// Typing indicator: tiny read every 4 s; while Tab is typing in the open chat, the chat itself refreshes every 4 s too,
-// so Tab's reply lands at the moment the dots go away.
-let tyBusy = false;
+// ---- live updates: Supabase Realtime (raw websocket, no library) on command.task_updates / tab_typing / tasks ----
+// Ticks turn blue the instant Tab reads (UPDATE of read_by_tab_at), dots appear/disappear the instant tab_typing changes,
+// Tab's replies land the instant they are inserted. RLS applies: the socket carries Mendel's own login token.
+// If the socket is down, a 3 s poll takes over while a chat is open.
+const RT = { ws: null, ok: false, ref: 0, hb: null, tok: "", retry: 1000, jref: null };
+const deb = (fn, ms) => { let t; return () => { clearTimeout(t); t = setTimeout(fn, ms); }; };
+const chatSoon = deb(() => { pollChat().catch(() => {}); }, 350), listSoon = deb(() => refreshLists(false), 500);
+function rtSend(topic, event, payload) { if (RT.ws && RT.ws.readyState === 1) { const ref = String(++RT.ref); RT.ws.send(JSON.stringify({ topic, event, payload, ref, join_ref: RT.jref })); return ref; } }
+async function rtConnect() {
+  if (!S || (RT.ws && RT.ws.readyState <= 1)) return;
+  let t; try { t = await token(); } catch { return; }
+  const ws = RT.ws = new WebSocket(SB.replace("https", "wss") + "/realtime/v1/websocket?apikey=" + KEY + "&vsn=1.0.0");
+  ws.onopen = () => {
+    RT.tok = t; RT.jref = String(++RT.ref);
+    ws.send(JSON.stringify({ topic: "realtime:cc-live", event: "phx_join", ref: RT.jref, join_ref: RT.jref, payload: {
+      config: { broadcast: { self: false }, presence: { key: "" }, private: false, postgres_changes: [
+        { event: "*", schema: "command", table: "task_updates" }, { event: "*", schema: "command", table: "tab_typing" }, { event: "*", schema: "command", table: "tasks" }] },
+      access_token: t } }));
+    clearInterval(RT.hb); RT.hb = setInterval(() => { rtSend("phoenix", "heartbeat", {}); rtToken(); }, 25000);
+  };
+  ws.onmessage = e => {
+    let m; try { m = JSON.parse(e.data); } catch { return; }
+    if (m.event === "phx_reply" && m.ref === RT.jref) {
+      if (!(m.payload && m.payload.status === "ok")) { try { ws.close(); } catch {} }
+      return;
+    }
+    if (m.event === "system" && m.payload && m.payload.status === "error") { try { ws.close(); } catch {} return; }
+    if (m.event === "system" && m.payload && m.payload.status === "ok" && m.payload.extension === "postgres_changes") {
+      // only now is the database feed really live; until this moment the 3 s fallback poll keeps running
+      const was = RT.ok; RT.ok = true; RT.retry = 1000; window.__rtOK = true;
+      if (!was) { loadTyping().then(patchTyping); chatSoon(); listSoon(); }   // catch up on anything missed while offline
+      return;
+    }
+    if (m.event === "phx_error" || m.event === "phx_close") { try { ws.close(); } catch {} return; }
+    if (m.event === "postgres_changes" && m.payload && m.payload.data) rtChange(m.payload.data);
+  };
+  ws.onclose = () => {
+    if (RT.ws !== ws) return;
+    RT.ok = false; window.__rtOK = false; clearInterval(RT.hb); RT.ws = null;
+    if (S) { setTimeout(rtConnect, RT.retry); RT.retry = Math.min(RT.retry * 2, 30000); }
+  };
+  ws.onerror = () => { try { ws.close(); } catch {} };
+}
+async function rtToken() {   // keep the socket's login fresh (tokens last 1 h)
+  try { const t = await token(); if (t !== RT.tok && RT.ok) { RT.tok = t; rtSend("realtime:cc-live", "access_token", { access_token: t }); } } catch {}
+}
+const pdt = v => Date.parse(String(v).replace(" ", "T").replace(/(\.\d{3})\d+/, "$1").replace(/([+-]\d\d)$/, "$1:00"));
+function rtChange(d) {
+  (window.__rtLog = window.__rtLog || []).push([Date.now(), d.table, d.type]); if (window.__rtLog.length > 30) window.__rtLog.shift();
+  const tb = d.table, ty = d.type, r = d.record || {}, o = d.old_record || {};
+  if (tb === "tab_typing") {
+    if (ty === "DELETE") delete TY[o.task_id]; else if (r.task_id) TY[r.task_id] = pdt(r.until);
+    patchTyping(); return;
+  }
+  if (tb === "task_updates") {
+    if (ty === "UPDATE" && r.id) {
+      // instant tick: grey ✓✓ -> blue ✓✓ the moment Tab reads it (chat bubble and list row)
+      document.querySelectorAll(`[data-tk="${r.id}"]`).forEach(x => { x.classList.toggle("rd", !!r.read_by_tab_at); x.title = r.read_by_tab_at ? "Read by Tab" : "Delivered to Tab"; });
+      if (MLAST[r.task_id] && MLAST[r.task_id].id === r.id) MLAST[r.task_id].read_by_tab_at = r.read_by_tab_at;
+      const C = CHAT; if (C && C.id === r.task_id) { const u = C.ups.find(x => x.id === r.id); if (u) { Object.assign(u, r); C.sig = JSON.stringify(C.ups); } }
+    }
+    if (ty === "INSERT" && r.author === "tab" && TY[r.task_id]) { delete TY[r.task_id]; patchTyping(); }   // reply landed: dots go
+    if (!CHAT || !r.task_id || CHAT.id === r.task_id) chatSoon();
+    listSoon(); return;
+  }
+  if (tb === "tasks") { listSoon(); if (CHAT && CHAT.id === (r.id || o.id)) chatSoon(); }
+}
+// Typing expiry is local (no network); network polling only when the live socket is down.
+let tyBusy = false, lastTy = 0;
 async function pollTyping() {
   if (!S || tyBusy || document.visibilityState !== "visible") return; tyBusy = true;
   try {
     const wasOpen = CHAT && typing(CHAT.id);
-    await loadTyping();
+    await loadTyping(); lastTy = Date.now();
     const isOpen = CHAT && typing(CHAT.id);
-    if (CHAT && (wasOpen || isOpen)) { try { await pollChat(); } catch {} }
+    if (CHAT && (wasOpen || isOpen || !RT.ok)) { try { await pollChat(); } catch {} }
     patchTyping();
   } finally { tyBusy = false; }
 }
-setInterval(pollTyping, 4000);
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") pollTyping(); });
+setInterval(() => {
+  if (!S) return;
+  patchTyping();                                   // dots vanish on time even with no event
+  if (document.visibilityState !== "visible") return;
+  if (!RT.ok) { rtConnect(); if (CHAT || Date.now() - lastTy > 6000) pollTyping(); }   // fallback: ≤3 s poll while a chat is open
+}, 1000 * 3);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { rtConnect(); pollTyping(); refreshLists(false); } });
+window.addEventListener("online", () => rtConnect());
 
 function sheet(html) { const d = document.createElement("div"); d.className = "sheet"; d.innerHTML = `<div class="box">${html}</div>`; d.onclick = e => { if (e.target === d) d.remove(); }; document.body.appendChild(d); return d; }
 
@@ -765,7 +847,7 @@ function login() {
     <div class="err" id="lerr"></div><div class="acts"><button class="btn" id="lb">Sign in</button></div></form></div>`;
   $("lf").onsubmit = async e => {
     e.preventDefault(); $("lb").disabled = true; $("lerr").textContent = "";
-    try { await auth("password", { email: $("le").value.trim(), password: $("lp").value }); route(); }
+    try { await auth("password", { email: $("le").value.trim(), password: $("lp").value }); route(); rtConnect(); }
     catch (x) { $("lerr").textContent = /invalid/i.test(x.message) ? "Wrong email or password." : x.message; $("lb").disabled = false; }
   };
 }
@@ -788,7 +870,7 @@ async function route() {
 window.addEventListener("hashchange", route);
 window.addEventListener("resize", () => { if (S && lastWide !== null && WIDE() !== lastWide && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) { CHAT = null; app.innerHTML = ""; route(); } });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") poll(); });
-route();
+route(); rtConnect();
 })();
 </script>
 </body></html>
