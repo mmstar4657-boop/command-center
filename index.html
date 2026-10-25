@@ -188,10 +188,31 @@ body.wd .top .in{max-width:none}
 .bwrap .bub{max-width:min(78vw,560px)}
 .more{opacity:0;border:0;background:none;color:var(--mut);font-size:18px;cursor:pointer;padding:4px 6px;border-radius:8px}
 @media(hover:hover){.msg:hover .more{opacity:1}.more:hover{background:#e2e8f0}}
-.pinbar{display:flex;align-items:center;gap:8px;background:#fffbeb;border-bottom:1px solid #fde68a;padding:8px 16px;cursor:pointer;font-size:14px}
-.pinbar .pt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pinbar .pc2{color:#a16207;font-size:12px;font-weight:700;white-space:nowrap}
-.pinned .bub{box-shadow:0 0 0 2px #fcd34d}
-.flash .bub{animation:fl 1.4s}@keyframes fl{0%,40%{box-shadow:0 0 0 4px #f59e0b}100%{box-shadow:none}}
+.pinbar{display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid var(--line);padding:3px 4px 3px 10px;cursor:pointer;font-size:13px;line-height:1.3;min-height:34px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.pinbar .pbar{width:3px;align-self:stretch;margin:3px 0;border-radius:2px;background:var(--ac);flex:none}
+.pinbar .pic{font-size:12px;opacity:.75;flex:none}
+.pinbar .pt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#334155}.pinbar .pt b{color:var(--ink,#0f172a);font-weight:600}
+.pinbar .pc2{color:var(--mut);font-size:11.5px;font-weight:600;white-space:nowrap}
+.pinbar .px{flex:none;border:0;background:none;color:var(--mut);font-size:14px;width:30px;height:30px;border-radius:50%;cursor:pointer;display:grid;place-items:center}.pinbar .px:hover{background:#f1f5f9}
+.flash{animation:flr 1.6s ease-out}@keyframes flr{0%,45%{background:rgba(79,70,229,.14)}100%{background:rgba(79,70,229,0)}}
+.flash .bub{animation:fl 1.6s}@keyframes fl{0%,45%{box-shadow:0 0 0 3px rgba(79,70,229,.45)}100%{box-shadow:none}}
+/* swipe-to-reply + quoted replies (WhatsApp style) */
+.msgs{overflow-x:hidden}.msg{touch-action:pan-y;border-radius:12px}
+.bwrap{position:relative;transition:transform .2s ease}.bwrap.sw{transition:none}
+.swh{position:absolute;left:-36px;top:50%;width:28px;height:28px;margin-top:-14px;border-radius:50%;background:#e2e8f0;color:#334155;display:grid;place-items:center;font-size:15px;opacity:0;transform:scale(.5);pointer-events:none}
+.bub.hasq{min-width:min(210px,62vw)}
+.qt{display:flex;align-items:stretch;gap:8px;background:#f1f5f9;border-radius:9px;overflow:hidden;margin:-3px -6px 6px;cursor:pointer;white-space:normal;text-align:left;min-width:0;--qc:#4f46e5}
+.qt.qtb{--qc:#16a34a}.qt .qb{width:4px;flex:none;background:var(--qc)}
+.qt .qx{flex:1;min-width:0;padding:5px 8px 6px 0;display:block}
+.qt .qa{display:block;font-size:12.5px;font-weight:700;color:var(--qc)}
+.qt .qs{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.3;color:#475569}
+.qt img.qi{width:44px;height:44px;object-fit:cover;flex:none;align-self:center;margin:4px 4px 4px 0;border-radius:6px;background:#e2e8f0}
+.msg.m .bub .qt{background:rgba(255,255,255,.17)}.msg.m .bub .qt.qm{--qc:#c7d2fe}.msg.m .bub .qt.qtb{--qc:#86efac}
+.msg.m .bub .qt .qs{color:rgba(255,255,255,.9)}
+.msg.m .bub.media .qt{background:var(--ac)}
+.rpl{display:flex;align-items:center;gap:6px;padding:0 2px 8px}.rpl .qt{flex:1;margin:0;cursor:pointer}
+.rpl .rpx{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:#f1f5f9;color:#475569;font-size:14px;cursor:pointer;display:grid;place-items:center}
+.more.rp{font-size:16px}@media(hover:none){.more.rp{display:none}}
 .mact{position:fixed;z-index:25;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px rgba(15,23,42,.18);padding:8px;min-width:250px}
 .mact .em{display:flex;gap:2px}.mact .em button{font-size:22px;border:0;background:none;cursor:pointer;width:38px;height:40px;border-radius:10px}.mact .em button:hover{background:#f1f5f9}
 .mact .it{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 10px;border-radius:10px;font-weight:600;cursor:pointer;font-size:15px}.mact .it:hover{background:#f1f5f9}
@@ -432,13 +453,23 @@ function attHtml(a) {
   if (mt.startsWith("audio/") || (mt.startsWith("video/") && a.voice)) return `<div class="aud"><audio controls preload="metadata" data-path="${esc(a.path)}"></audio><small>🎤 Voice message${a.duration ? " · " + fmtDur(a.duration) : ""}</small></div>`;
   return `<a class="fchip" data-path="${esc(a.path)}" target="_blank" rel="noopener">📄 <span>${esc(a.name || "file")}</span></a>`;
 }
+function qLabel(o) {
+  const b = (o.body || "").trim(); if (b) return b;
+  const a = (o.attachments || [])[0]; if (!a) return "Message";
+  const mt = a.mime || ""; return mt.startsWith("image/") ? "📷 Photo" : (mt.startsWith("audio/") || a.voice) ? "🎤 Voice message" : "📄 " + (a.name || "File");
+}
+function quoteHtml(o) {   // WhatsApp-style quote card: coloured bar, author, 1-2 line snippet, photo thumbnail
+  if (!o) return `<div class="qt"><span class="qb"></span><span class="qx"><span class="qs">Original message</span></span></div>`;
+  const me = o.author === "mendel", im = (o.attachments || []).find(x => (x.mime || "").startsWith("image/"));
+  return `<div class="qt ${me ? "qm" : "qtb"}" data-q="${o.id}"><span class="qb"></span><span class="qx"><span class="qa">${me ? "You" : "Tab"}</span><span class="qs">${esc(qLabel(o))}</span></span>${im ? `<img class="qi" data-path="${esc(im.path)}" alt="">` : ""}</div>`;
+}
 function msgHtml(u) {
   const at = Array.isArray(u.attachments) ? u.attachments : [];
   const body = (u.body || "").trim(), me = u.author === "mendel";
   const cls = at.length ? (body ? "withmedia" : "media") : "";
   const rx = Object.entries(u.reactions || {}).filter(([, w]) => w && w.length);
   const tick = me ? (u.read_by_tab_at ? `<span class="tick rd" data-tk="${u.id}" title="Read by Tab">✓✓</span>` : u.id ? `<span class="tick" data-tk="${u.id}" title="Delivered to Tab">✓✓</span>` : `<span class="tick" title="Sending">✓</span>`) : "";
-  return `<div class="msg ${me ? "m" : "t"}${u.pinned ? " pinned" : ""}" data-id="${u.id}" id="u-${u.id}"><div class="bwrap"><div class="bub ${cls}">${at.length ? `<div class="atts">${at.map(attHtml).join("")}</div>` : ""}${body ? `<div class="txt">${linky(body)}</div>` : ""}</div><button class="more" data-more="${u.id}" aria-label="Message options">⋯</button></div>` +
+  return `<div class="msg ${me ? "m" : "t"}${u.pinned ? " pinned" : ""}" data-id="${u.id}" id="u-${u.id}"><div class="bwrap"><span class="swh" aria-hidden="true">&#8617;</span><div class="bub ${cls}${u.reply_to ? " hasq" : ""}">${u.reply_to ? quoteHtml(((CHAT && CHAT.ups) || []).find(x => x.id === u.reply_to)) : ""}${at.length ? `<div class="atts">${at.map(attHtml).join("")}</div>` : ""}${body ? `<div class="txt">${linky(body)}</div>` : ""}</div><button class="more" data-more="${u.id}" aria-label="Message options">⋯</button><button class="more rp" data-rp="${u.id}" aria-label="Reply" title="Reply">&#8617;</button></div>` +
     (rx.length ? `<div class="rx">${rx.map(([e, w]) => `<button data-rx="${u.id}" data-e="${esc(e)}" class="${w.includes("mendel") ? "mine" : ""}" title="${w.map(x => x === "mendel" ? "You" : "Tab").join(", ")}">${esc(e)}${w.length > 1 ? " " + w.length : ""}</button>`).join("")}</div>` : "") +
     `<div class="mt">${u.pinned ? "📌 " : ""}${me ? "You" : "Tab"} · ${hm(u.created_at)}${tick}</div></div>`;
 }
@@ -474,12 +505,12 @@ async function chatView(id, el) {
     </div>
     <div class="pinbar" id="pinbar" hidden></div>
     <div class="msgs" id="msgs"></div>
-    <div class="composer"><div class="pend" id="pend" hidden></div>
+    <div class="composer"><div class="rpl" id="rpl" hidden></div><div class="pend" id="pend" hidden></div>
       <div class="rowc"><button class="ib" id="att" title="Add photo or PDF" aria-label="Add photo or PDF">📎</button>
       <textarea id="cm" rows="1" placeholder="Message"></textarea><div class="rec" id="rec" hidden><span class="dotr"></span><span id="rect">Recording 0:00</span><span style="flex:1"></span><button class="ib" id="recx" style="width:34px;height:34px;font-size:15px;background:#fff" aria-label="Cancel recording">✕</button></div>
       <button class="ib mic" id="mic" title="Record a voice message" aria-label="Record a voice message">🎤</button>
       <button class="ib send" id="send" aria-label="Send">➤</button></div>
-      ${FINE() ? `<div class="hint">Enter to send · Shift+Enter for a new line · hover a message for reactions and pin</div>` : `<div class="hint">Long-press a message to react or pin</div>`}
+      ${FINE() ? `<div class="hint">Enter to send · Shift+Enter for a new line · hover a message to reply, react or pin</div>` : `<div class="hint">Swipe a message right to reply · long-press to react or pin</div>`}
       <input type="file" id="fi" accept="image/*,application/pdf" multiple hidden></div></div>`;
   const ms = el.querySelector("#msgs"), cm = el.querySelector("#cm");
   C.ms = ms;
@@ -488,13 +519,15 @@ async function chatView(id, el) {
   C.stickIfNear = () => { if (C.wasNear !== false) C.stick(); };
   ms.addEventListener("scroll", () => { C.wasNear = C.near(); const pill = ms.querySelector(".newpill"); if (pill && C.wasNear) pill.remove(); });
   const drawPins = () => {
-    const pins = C.ups.filter(u => u.pinned), pb = el.querySelector("#pinbar");
-    pb.hidden = !pins.length; if (!pins.length) return;
+    const pins = C.ups.filter(u => u.pinned), pb = el.querySelector("#pinbar"), hk = "cc_pinhide_" + id;
+    let hid = []; try { hid = JSON.parse(localStorage.getItem(hk) || "[]"); } catch {}
+    const show = pins.some(u => !hid.includes(u.id));   // ✕ hides it until something new is pinned
+    pb.hidden = !show; if (!show) return;
     if (C.pinIx >= pins.length) C.pinIx = 0;
     const u = pins[pins.length - 1 - C.pinIx];
     const label = (u.body || "").trim() || ((u.attachments || [])[0] ? ((u.attachments[0].mime || "").startsWith("image/") ? "📷 Photo" : (u.attachments[0].mime || "").startsWith("audio/") ? "🎤 Voice message" : "📄 " + u.attachments[0].name) : "");
-    pb.innerHTML = `<span>📌</span><span class="pt"><b>${u.author === "mendel" ? "You" : "Tab"}:</b> ${esc(label)}</span>${pins.length > 1 ? `<span class="pc2">${C.pinIx + 1} of ${pins.length}</span>` : ""}`;
-    pb.onclick = () => { jump(u.id); if (pins.length > 1) { C.pinIx = (C.pinIx + 1) % pins.length; drawPins(); } };
+    pb.innerHTML = `<span class="pbar"></span><span class="pic">📌</span><span class="pt"><b>${u.author === "mendel" ? "You" : "Tab"}:</b> ${esc(label)}</span>${pins.length > 1 ? `<span class="pc2">${C.pinIx + 1}/${pins.length}</span>` : ""}<button class="px" aria-label="Hide pinned message" title="Hide">✕</button>`;
+    pb.onclick = e => { if (e.target.closest(".px")) { localStorage.setItem(hk, JSON.stringify(pins.map(x => x.id))); pb.hidden = true; return; } jump(u.id); if (pins.length > 1) { C.pinIx = (C.pinIx + 1) % pins.length; drawPins(); } };
   };
   const jump = uid => { const m = el.querySelector("#u-" + uid); if (!m) return; m.scrollIntoView({ block: "center", behavior: "smooth" }); m.classList.remove("flash"); void m.offsetWidth; m.classList.add("flash"); };
   const render = (stick = true) => {
@@ -531,16 +564,59 @@ async function chatView(id, el) {
     closeMenu(); const u = C.ups.find(x => x.id === uid); if (!u) return;
     const m = document.createElement("div"); m.className = "mact";
     m.innerHTML = `<div class="em">${EMO.map(e => `<button data-e="${e}">${e}</button>`).join("")}<button data-e="+" title="Other emoji">＋</button></div>
-      <button class="it" data-a="pin">${u.pinned ? "Unpin" : "📌 Pin"}</button>${(u.body || "").trim() ? `<button class="it" data-a="copy">Copy text</button>` : ""}`;
+      <button class="it" data-a="reply">&#8617; Reply</button><button class="it" data-a="pin">${u.pinned ? "Unpin" : "📌 Pin"}</button>${(u.body || "").trim() ? `<button class="it" data-a="copy">Copy text</button>` : ""}`;
     document.body.appendChild(m);
     const r = anchor.getBoundingClientRect(), mw = m.offsetWidth, mh = m.offsetHeight;
     m.style.left = Math.max(8, Math.min(innerWidth - mw - 8, u.author === "mendel" ? r.right - mw : r.left)) + "px";
     m.style.top = (r.top - mh - 8 > 8 ? r.top - mh - 8 : Math.min(innerHeight - mh - 8, r.bottom + 8)) + "px";
     m.querySelectorAll("[data-e]").forEach(b => b.onclick = () => { let e = b.dataset.e; if (e === "+") { e = (prompt("Type or pick an emoji") || "").trim().slice(0, 8); if (!e) return closeMenu(); } react(uid, e); });
     m.querySelector('[data-a="pin"]').onclick = () => pin(uid, !u.pinned);
+    m.querySelector('[data-a="reply"]').onclick = () => { closeMenu(); setReply(uid); };
     const cp = m.querySelector('[data-a="copy"]'); if (cp) cp.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(u.body).then(() => toast("Copied")); closeMenu(); };
   };
+  // ---- reply (quote) draft above the input ----
+  const drawReply = () => {
+    const rp = el.querySelector("#rpl"), u = C.reply && C.ups.find(x => x.id === C.reply);
+    if (!u) C.reply = null;
+    rp.hidden = !u; rp.innerHTML = u ? quoteHtml(u) + `<button class="rpx" id="rpx" aria-label="Cancel reply" title="Cancel reply">✕</button>` : "";
+    if (u) { hydrate(rp); rp.querySelector("#rpx").onclick = () => { C.reply = null; drawReply(); }; rp.querySelector(".qt").onclick = () => jump(u.id); }
+  };
+  const setReply = uid => { C.reply = uid; drawReply(); try { cm.focus({ preventScroll: true }); } catch { cm.focus(); } if (C.near()) C.stick(); };
+  C.setReply = setReply; C.drawReply = drawReply;
+  cm.addEventListener("keydown", e => { if (e.key === "Escape" && C.reply) { C.reply = null; drawReply(); } });
+  // ---- swipe a message left-to-right to reply (touch) ----
+  let sw = null;
+  ms.addEventListener("touchstart", e => {
+    sw = null; if (e.touches.length !== 1) return;
+    const bw = e.target.closest(".bwrap"), m = bw && bw.closest('.msg[id^="u-"]');
+    if (!m || !m.dataset.id || m.dataset.id === "undefined" || e.target.closest("audio,.rx,.more")) return;
+    sw = { x: e.touches[0].clientX, y: e.touches[0].clientY, bw, m, dx: 0, lock: 0, h: bw.querySelector(".swh") };
+  }, { passive: true });
+  ms.addEventListener("touchmove", e => {
+    if (!sw) return;
+    const dx = e.touches[0].clientX - sw.x, dy = e.touches[0].clientY - sw.y;
+    if (!sw.lock) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      sw.lock = dx > 0 && Math.abs(dx) > Math.abs(dy) * 1.2 ? 1 : -1;
+      if (sw.lock === 1) { clearTimeout(lpT); lpT = null; sw.bw.classList.add("sw"); }
+    }
+    if (sw.lock !== 1) return;
+    if (e.cancelable) e.preventDefault();
+    sw.dx = Math.max(0, dx);
+    const x = sw.dx < 60 ? sw.dx : Math.min(96, 60 + (sw.dx - 60) * 0.35), k = Math.min(1, sw.dx / 60);
+    sw.bw.style.transform = `translateX(${x}px)`;
+    if (sw.h) { sw.h.style.opacity = k; sw.h.style.transform = `scale(${0.5 + 0.5 * k})`; }
+    if (sw.dx >= 60 && !sw.buzz) { sw.buzz = 1; if (navigator.vibrate) navigator.vibrate(10); }
+  }, { passive: false });
+  const swEnd = () => {
+    const s = sw; sw = null; if (!s || s.lock !== 1) return;
+    s.bw.classList.remove("sw"); s.bw.style.transform = ""; if (s.h) { s.h.style.opacity = ""; s.h.style.transform = ""; }
+    if (s.dx >= 60) setReply(s.m.dataset.id);
+  };
+  ms.addEventListener("touchend", swEnd); ms.addEventListener("touchcancel", swEnd);
   ms.addEventListener("click", e => {
+    const qc = e.target.closest(".qt[data-q]"); if (qc) { jump(qc.dataset.q); return; }
+    const rpb = e.target.closest("[data-rp]"); if (rpb) { setReply(rpb.dataset.rp); return; }
     const b = e.target.closest(".ph"); if (b) { if (!C.lp) lightbox(b.dataset.path); return; }
     const mo = e.target.closest("[data-more]"); if (mo) { menu(mo.dataset.more, mo.closest(".msg").querySelector(".bub")); return; }
     const rx = e.target.closest("[data-rx]"); if (rx) react(rx.dataset.rx, rx.dataset.e);
@@ -575,7 +651,9 @@ async function chatView(id, el) {
   };
   el.querySelector("#st").onchange = async e => { try { const r = await db("tasks?id=eq." + id, { method: "PATCH", body: { status: e.target.value } }); C.t = r[0]; setPh(); toast("Status: " + ST[e.target.value]); refreshLists(true); } catch (x) { toast(x.message); } };
   async function post(body, atts) {
-    const r = await db("task_updates", { method: "POST", body: { task_id: id, author: "mendel", body, attachments: atts } });
+    const rto = C.reply || null;
+    const r = await db("task_updates", { method: "POST", body: rto ? { task_id: id, author: "mendel", body, attachments: atts, reply_to: rto } : { task_id: id, author: "mendel", body, attachments: atts } });
+    if (rto && C.reply === rto) { C.reply = null; C.drawReply(); }
     if (C.t.status === "waiting_on_mendel") { const r2 = await db("tasks?id=eq." + id, { method: "PATCH", body: { status: "to_do" } }); C.t = r2[0]; el.querySelector("#st").value = "to_do"; setPh(); }
     for (const u of r) if (!C.ups.some(x => x.id === u.id)) C.ups.push(u);
     // WhatsApp-style: Tab starts "typing…" the moment Mendel sends (the DB trigger does the same server-side for 2 min).
