@@ -27,6 +27,7 @@ a{color:inherit;text-decoration:none}
 .btn{border:0;border-radius:12px;background:var(--ac);color:#fff;font-weight:600;padding:0 16px;min-height:44px;cursor:pointer;white-space:nowrap}
 .btn.ghost{background:var(--ac2);color:var(--ac)}.btn.plain{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn:disabled{opacity:.55}
+.btn .sm{display:none}@media(max-width:480px){.top .btn{padding:0 11px}.btn .lg{display:none}.btn .sm{display:inline}}@media(max-width:420px){.top{padding-left:12px;padding-right:12px}.top .btn{font-size:15px;padding:0 10px}.top .in{gap:8px}.brand{font-size:17px;gap:7px}.brand .dot{width:22px;height:22px;font-size:12px}}@media(max-width:400px){.top .brand .dot{display:none}}
 main{max-width:1080px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom))}
 h2{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin:22px 4px 10px;font-weight:700;display:flex;align-items:center;gap:8px}
 h2 .n{background:var(--ac);color:#fff;border-radius:99px;font-size:12px;padding:1px 8px;letter-spacing:0}
@@ -367,9 +368,11 @@ async function markSeen(id, latest) {
 
 function top(title, back) {
   bar.innerHTML = (back ? `<button class="back" id="bk">‹ ${esc(back)}</button><div class="brand"><span class="t"></span></div>` : `<div class="brand"><span class="dot">✓</span><span class="t">${esc(title)}</span></div>`) +
+    (S && !back ? `<button class="btn ghost" id="npt"><span class="lg">+ New project</span><span class="sm">+ Project</span></button>` : "") +
     (S ? `<button class="btn" id="nt">+ New task</button>` : "");
   if (back) $("bk").onclick = () => history.length > 1 ? history.back() : (location.hash = "#/");
   if ($("nt")) $("nt").onclick = () => newTask();
+  if ($("npt")) $("npt").onclick = () => newProject();
   setH();
 }
 
@@ -879,7 +882,7 @@ async function newTask(pid) {
   const cur = pid || (location.hash.match(/^#\/p\/([\w-]+)/) || [])[1] || (WIDE() && MID !== "w" ? MID : "");
   let pr = "normal";
   const d = sheet(`<h3>New task</h3><div class="muted small">Tab picks it up from here.</div>
-    <label for="ntp">Project</label><select id="ntp">${cur ? "" : '<option value="">Choose a project…</option>'}${P.map(p => `<option value="${p.id}" ${p.id === cur ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select>
+    <label for="ntp">Project</label><select id="ntp">${popts(cur)}</select>
     <label for="ntt">Title</label><input type="text" id="ntt" placeholder="What needs doing?" maxlength="200">
     <label for="ntd">Details</label><textarea id="ntd" placeholder="Anything Tab should know (optional)"></textarea>
     <label>Priority</label><div class="seg"><button class="on" data-p="normal">Normal</button><button data-p="urgent">Urgent</button></div>
@@ -887,6 +890,12 @@ async function newTask(pid) {
     <div class="acts"><button class="btn plain" id="ntc">Cancel</button><button class="btn" id="nts">Save task</button></div>`);
   d.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { pr = b.dataset.p; d.querySelectorAll("[data-p]").forEach(x => x.className = x === b ? "on" + (pr === "urgent" ? " u" : "") : ""); });
   $("ntc").onclick = () => d.remove();
+  let prev = $("ntp").value;
+  $("ntp").onchange = () => {
+    if ($("ntp").value !== "__new") { prev = $("ntp").value; return; }
+    $("ntp").value = prev;
+    newProject(np => { $("ntp").innerHTML = popts(np.id); prev = np.id; $("nte").textContent = ""; });
+  };
   setTimeout(() => $("ntt").focus(), 50);
   $("nts").onclick = async () => {
     const project_id = $("ntp").value, title = $("ntt").value.trim();
@@ -900,19 +909,30 @@ async function newTask(pid) {
   };
 }
 
-function newProject() {
+const popts = cur => (cur ? "" : '<option value="">Choose a project…</option>') + P.map(p => `<option value="${p.id}" ${p.id === cur ? "selected" : ""}>${esc(p.name)}</option>`).join("") + '<option value="__new">+ New project…</option>';
+
+function newProject(onDone) {
   let color = COLORS[P.length % COLORS.length];
-  const d = sheet(`<h3>New project</h3>
+  const d = sheet(`<h3>New project</h3><div class="muted small">Its own list of tasks, like the others.</div>
     <label for="npn">Name</label><input type="text" id="npn" maxlength="80" placeholder="Project name">
     <label>Color</label><div class="sw">${COLORS.map(c => `<button style="background:${c}" data-c="${c}" class="${c === color ? "on" : ""}" aria-label="color"></button>`).join("")}</div>
     <div class="err" id="npe"></div>
     <div class="acts"><button class="btn plain" id="npc">Cancel</button><button class="btn" id="nps">Create project</button></div>`);
   d.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { color = b.dataset.c; d.querySelectorAll("[data-c]").forEach(x => x.classList.toggle("on", x === b)); });
   $("npc").onclick = () => d.remove();
+  setTimeout(() => $("npn").focus(), 50);
+  $("npn").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); $("nps").click(); } };
   $("nps").onclick = async () => {
     const name = $("npn").value.trim(); if (!name) { $("npe").textContent = "Give it a name."; return; }
+    if (P.some(p => p.name.trim().toLowerCase() === name.toLowerCase())) { $("npe").textContent = "You already have a project with that name."; return; }
     $("nps").disabled = true;
-    try { const sort = Math.max(0, ...P.map(p => p.sort)) + 1; const r = await db("projects", { method: "POST", body: { name, color, sort } }); d.remove(); toast("Project created"); await load(); location.hash = "#/p/" + r[0].id; }
+    try {
+      const sort = Math.max(0, ...P.map(p => p.sort)) + 1;
+      const r = await db("projects", { method: "POST", body: { name, color, sort } });
+      d.remove(); toast("Project created"); await load();
+      if (onDone) onDone(r[0]);
+      else location.hash = "#/p/" + r[0].id;
+    }
     catch (x) { $("npe").textContent = x.message; $("nps").disabled = false; }
   };
 }
